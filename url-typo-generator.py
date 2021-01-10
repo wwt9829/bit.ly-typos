@@ -2,6 +2,44 @@ from urllib.parse import urlparse
 
 # TODO: comments
 
+key_list = {'a': ['q', 'w', 's', 'x', 'z'],
+                'b': ['v', 'g', 'h', 'n'],
+                'c': ['x', 'd', 'f', 'v'],
+                'd': ['s', 'e', 'r', 'f', 'c', 'x'],
+                'e': ['w', '3', '4', 'r', 'f', 'd', 's'],
+                'f': ['d', 'r', 't', 'g', 'v', 'c'],
+                'g': ['f', 't', 'y', 'h', 'b', 'v'],
+                'h': ['g', 'y', 'u', 'j', 'n', 'b'],
+                'i': ['u', '8', '9', 'o', 'l', 'k', 'j'],
+                'j': ['h', 'u', 'i', 'k', 'm', 'n'],
+                'k': ['j', 'i', 'o', 'l', 'm'],
+                'l': ['k', 'o', 'p'],
+                'm': ['n', 'j', 'k'],
+                'n': ['b', 'h', 'j', 'm'],
+                'o': ['i', '9', '0', 'p', 'l', 'k'],
+                'p': ['o', '0', 'l'],
+                'q': ['1', '2', 'w', 's', 'a'],
+                'r': ['e', '4', '5', 't', 'g', 'f', 'd'],
+                's': ['a', 'w', 'e', 'd', 'x', 'z'],
+                't': ['r', '5', '6', 'y', 'h', 'g', 'f'],
+                'u': ['y', '7', '8', 'i', 'k', 'j', 'h'],
+                'v': ['c', 'f', 'g', 'b'],
+                'w': ['q', '2', '3', 'e', 'd', 's', 'a'],
+                'x': ['z', 's', 'd', 'c'],
+                'y': ['t', '6', '7', 'u', 'j', 'h', 'g'],
+                'z': ['a', 's', 'x'],
+                '1': ['2', 'q'],
+                '2': ['1', '3', 'w', 'q'],
+                '3': ['2', '4', 'e', 'w'],
+                '4': ['3', '5', 'r', 'e'],
+                '5': ['4', '6', 't', 'r'],
+                '6': ['5', '7', 'y', 't'],
+                '7': ['6', '8', 'u', 'y'],
+                '8': ['7', '9', 'i', 'u'],
+                '9': ['8', '0', 'o', 'i'],
+                '0': ['9', 'p', 'o'],
+            }
+
 
 def skip_letter(keyword, list):
     """
@@ -44,33 +82,53 @@ def reverse_letters(keyword, list):
 
 def missed_key(keyword, list):
     """
-
-    :param keyword:
-    :param list:
+    Generate all keywords with a missed key (assume only one missed key per generated word)
+    :param keyword: a keyword to generate typos for
+    :param list: the list of typos to append to
+    TODO: add capital letter handling
     """
+    i = 0
+    j = 0
+    while i < len(keyword):
+        while j < len(key_list[keyword[i]]):
+            new_word = keyword[0:i] + key_list[keyword[i]][j] + keyword[i + 1:]
+            j += 1
+            list.append(new_word)
+        i += 1
+        j = 0
 
 
 def inserted_key(keyword, list):
     """
-
-    :param keyword:
-    :param list:
+    Generate all keywords with an inserted key (assume only one inserted key per generated word)
+    :param keyword: a keyword to generate typos for
+    :param list: the list of typos to append to
+    TODO: add capital letter handling
     """
-    return list
+    i = 0
+    j = 0
+    while i < len(keyword):
+        while j < len(key_list[keyword[i]]):
+            new_word_1 = keyword[0:i] + key_list[keyword[i]][j] + keyword[i:]
+            new_word_2 = keyword[0:i] + keyword[i] + key_list[keyword[i]][j] + keyword[i + 1:]
+            j += 1
+            list.append(new_word_1)
+            list.append(new_word_2)
+        i += 1
+        j = 0
 
 
 if __name__ == "__main__":
-    #original_bitly_link = input("Enter bit.ly short URL to create typos:")
+    original_bitly_link = input("Enter bit.ly short URL to create typos:")
 
-    #path = original_bitly_link.split("/")[-1]
-    path = 'test123'
+    path = original_bitly_link.split("/")[-1]
     typo_list = []
 
     skip_letter(path, typo_list)
     double_letter(path, typo_list)
     reverse_letters(path, typo_list)
-    #typo_list = missed_key(path, typo_list)
-    #typo_list = inserted_key(path, typo_list)
+    missed_key(path, typo_list)
+    inserted_key(path, typo_list)
 
     for typo in typo_list:
         print(typo)
