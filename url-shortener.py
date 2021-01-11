@@ -6,6 +6,7 @@ import sys
 
 # TODO: exception handling so the program can continue making URLs if one fails
 
+
 def create_link(head, long_url):
     """
     Shortens a long URL into a bit.ly short link URL
@@ -47,7 +48,7 @@ def create_link(head, long_url):
 
 def update_custom(head, old_link, new_link):
     """
-    Changes the ending of a bit.ly short URL
+    Changes the ending of a bit.ly ID
     :param head: request headers (API key and content type)
     :param old_link: a bitlink ID to change
     :param new_link: an unused bitlink ID
@@ -74,46 +75,62 @@ def update_custom(head, old_link, new_link):
         exit()
 
 
-if __name__ == "__main__":
-    # check to see if the API key was supplied in program arguments
-    # TODO: move somewhere else?
-    if len(sys.argv) != 2:
-        print("Argument error: missing API key")
-        exit()
-
-    # obtain the API key and insert it into the request headers
-    # TODO: move somewhere else?
-    api_key = sys.argv[1]
+def create_short_url(api_key, long, short):
+    """
+    Create a bit.ly ID given a long URL
+    :param api_key: the bit.ly API key for the user
+    :param long: a properly-formatted long URL
+    :param short: a properly-formatted bit.ly ID
+    :return: status code of the result
+    """
+    # insert the api key into the request headers
     headers = {
         'Authorization': 'Bearer {}'.format(api_key),
         'Content-Type': 'application/json',
     }
 
-    # the URL to shorten
-    # TODO: replace
-    url_to_shorten = 'https://example.net/'
+    # create a bit.ly ID from a long URL
+    result, bitly_link = create_link(headers, long)
 
-    # create a bit.ly short URL from a long URL
-    print('Shortening', url_to_shorten, 'to a bit.ly link', end="...")
-    result, bitly_link = create_link(headers, url_to_shorten)
+    # return the status code of the result if unsuccessful
+    # TODO: better method of differentiating between fail types
+    if (result != HTTPStatus.OK) and (result != HTTPStatus.CREATED):
+        return result
 
-    # print the result
-    if result == HTTPStatus.CREATED:
-        print('created!')
-    if result == HTTPStatus.OK:
-        print('already exists!')
-
-    # parse the HTTP link to a bit.ly short URL
+    # parse the HTTP link to a bit.ly ID
     parsed_bitly_link = urlparse(bitly_link)
     bitly_id = parsed_bitly_link.netloc + parsed_bitly_link.path
 
-    # the custom bit.ly short URL to use
-    # TODO: replace
-    change_to = 'bit.ly/correct1102021'
+    # change the bit.ly ID to have a custom ending
+    result = update_custom(headers, bitly_id, short)
 
-    # change the bit.ly short URL to have a custom ending
-    print('Changing', bitly_id, 'to', change_to, "short link", end="...")
-    result = update_custom(headers, bitly_id, change_to)
+    # TODO: better method of differentiating between fail types
+    # return the status code of the result
+    return result
 
+
+if __name__ == "__main__":
+    # check to see if the API key was supplied in program arguments
+    if len(sys.argv) != 2:
+        print("Argument error: missing API key")
+        exit()
+    # TODO: validation of api key
+    api_key = sys.argv[1]
+
+    # the URL to shorten
+    # TODO: URL checking
+    url_to_shorten = input("Enter a properly-formatted URL to shorten:")
+
+    # the custom bit.ly ID to use
+    # TODO: URL checking
+    change_to = input("Enter a new properly formatted bit.ly ID to shorten to:")
+
+    # shorten the URL
+    print('Shortening', url_to_shorten, 'to', 'https://'+change_to, 'bit.ly link', end="...")
+    result = create_short_url(api_key, url_to_shorten, change_to)
+
+    # print the result
     if result == HTTPStatus.OK:
-        print('success!')
+        print("done!")
+    else:
+        print("error:", result)
