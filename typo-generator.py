@@ -1,3 +1,5 @@
+import sys
+
 # adjacent key mappings for the missed key and inserted key functions
 key_list = {'a': ['q', 'w', 's', 'x', 'z'],
             'b': ['v', 'g', 'h', 'n'],
@@ -165,11 +167,11 @@ def make_typos(string):
     Apply the typo operations
     :param string: a string to generate typos with
     """
+    # check if the string is alphanumeric, exiting if not
     for character in string:
         if not character.isalnum():
-            # TODO: exception handling
-            print("fail: string contains non-alphanumeric characters")
-            exit()
+            print("fail: string contains non-alphanumeric characters", file=sys.stderr)
+            exit(1)
 
     # the list to append typos to
     typo_list = []
