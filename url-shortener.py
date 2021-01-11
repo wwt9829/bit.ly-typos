@@ -5,8 +5,6 @@ import requests
 import sys
 import validators
 
-# TODO: exception handling so the program can continue making URLs if one fails
-
 
 def create_link(head, long_url):
     """
@@ -15,6 +13,8 @@ def create_link(head, long_url):
     :param long_url: a properly-formatted URL
     :return: a properly-formatted bit.ly short link URL
     """
+    short_url = None
+
     # convert the URL parameters to JSON
     data = {
         'long_url': long_url,
@@ -22,29 +22,16 @@ def create_link(head, long_url):
     }
     data = json.dumps(data)
 
-    # TODO: try/except for json dump
-
     # send the request to the bit.ly API and parse the JSON response for a 'content' field
     response = requests.post('https://api-ssl.bitly.com/v4/shorten', headers=head, data=data)
     re_json = json.loads(response.content)
     try:
         short_url = re_json['link']
-        if response.status_code == HTTPStatus.CREATED:
-            # the response returned a CREATED status code, return CREATED and the URL
-            return HTTPStatus.CREATED, short_url
-        elif response.status_code == HTTPStatus.OK:
-            # the response returned an OK status code, return OK and the URL
-            return HTTPStatus.OK, short_url
-        else:
-            # the response returned something else, print the error and exit the program
-            print('fail:', response.status_code)
-            exit()
+    except KeyError as ke:
+        # the JSON content couldn't be found, print the error
+        print('KeyError:', ke, file=sys.stderr)
 
-    except KeyError:
-        # the JSON content couldn't be found, print the error and exit the program
-        # TODO: print the actual error
-        print('fail: error reading JSON')
-        exit()
+    return response, short_url
 
 
 def update_custom(head, old_link, new_link):
@@ -62,18 +49,9 @@ def update_custom(head, old_link, new_link):
     }
     data = json.dumps(data)
 
-    # TODO: try/except for json dump
-
     # send the request to the bit.ly API and obtain the response
     response = requests.post('https://api-ssl.bitly.com/v4/custom_bitlinks', headers=head, data=data)
-
-    if response.status_code == HTTPStatus.OK:
-        # the response returned an OK status code, return True
-        return HTTPStatus.OK
-    else:
-        # the response returned something else, exit the program
-        print('fail:', response.status_code)
-        exit()
+    return response
 
 
 def validate_id(bit_id):
@@ -97,6 +75,24 @@ def validate_id(bit_id):
     return True
 
 
+def validate(k, l, s):
+    """
+    Validate the api key, the long URL, and the bit.ly ID short link URL, exiting if invalid
+    :param k: API key
+    :param l: a URL
+    :param s: a bit.ly ID
+    """
+    if not k.isalnum() or not k.islower() or not len(k) == 40:
+        print('fail: invalid API key', file=sys.stderr)
+        exit(1)
+    if not validators.url(l):
+        print('fail: invalid URL', file=sys.stderr)
+        exit(1)
+    if not validate_id(s):
+        print('fail: invalid bit.ly ID', file=sys.stderr)
+        exit(1)
+
+
 def create_short_url(key, long, short):
     """
     Create a bit.ly ID given a long URL
@@ -106,14 +102,7 @@ def create_short_url(key, long, short):
     :return: status code of the result
     """
     # validate the api key, the long URL, and the bit.ly ID short link URL
-    if not key.isalnum() or not key.islower() or not len(key) == 40:
-        print('fail: invalid API key')
-    if not validators.url(long):
-       print('fail: invalid URL')
-       exit()
-    if not validate_id(short):
-        print('fail: invalid bit.ly ID')
-        exit()
+    validate(key, long, short)
 
     # insert the api key into the request headers
     headers = {
@@ -124,9 +113,10 @@ def create_short_url(key, long, short):
     # create a bit.ly ID from a long URL
     result, bitly_link = create_link(headers, long)
 
-    # return the status code of the result if unsuccessful
-    # TODO: better method of differentiating between fail types
-    if (result != HTTPStatus.OK) and (result != HTTPStatus.CREATED):
+    # return details of the result if unsuccessful
+    if ((result.status_code != HTTPStatus.OK) and (result.status_code != HTTPStatus.CREATED)) or bitly_link is None:
+        print('fail: error', result.status_code, 'creating the initial short link from', long, file=sys.stderr)
+        print(result.content, file=sys.stderr)
         return result
 
     # parse the HTTP link to a bit.ly ID
@@ -136,27 +126,30 @@ def create_short_url(key, long, short):
     # change the bit.ly ID to have a custom ending
     result = update_custom(headers, bitly_id, short)
 
-    # TODO: better method of differentiating between fail types
-    # return the status code of the result
+    # return details of the result if unsuccessful
+    if result.status_code != HTTPStatus.OK:
+        # the response returned something else
+        print('fail: error', result.status_code, 'creating new short link', short, 'from generated link', bitly_id,
+              'for', long, file=sys.stderr)
+        print(result.content, file=sys.stderr)
+
+    # return the status code of the change
     return result
 
 
 if __name__ == '__main__':
-    # check to see if the API key was supplied in program arguments
+    # check to see if the API key was supplied in program arguments, and exit if not
     if len(sys.argv) != 2:
         print('Argument error: missing API key')
-        exit()
+        exit(1)
     api_key = sys.argv[1]
 
     url_to_shorten = input('Enter a URL to shorten:')
-    change_to = input('Enter a new properly formatted bit.ly ID to shorten to:')
+    change_to = input('Enter a new bit.ly ID to shorten to:')
 
     # shorten the URL
-    result = create_short_url(api_key, url_to_shorten, change_to)
+    results = create_short_url(api_key, url_to_shorten, change_to)
 
     # print the result
-    # TODO: better method of differentiating between fail types
-    if result == HTTPStatus.OK:
+    if results.status_code == HTTPStatus.OK:
         print('Success!')
-    else:
-        print('fail:', result)
