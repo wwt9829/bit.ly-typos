@@ -3,7 +3,6 @@ from http import HTTPStatus
 import json
 import requests
 import sys
-import validators
 
 
 def create_link(head, long_url):
@@ -54,45 +53,6 @@ def update_custom(head, old_link, new_link):
     return response
 
 
-def validate_id(bit_id):
-    """
-    Determines if a given bit.ly ID is properly formatted
-    :param bit_id: the bit.ly ID to be evaluated
-    :return: ID validity, as a boolean
-    """
-    # must have a /
-    if '/' not in bit_id:
-        return False
-
-    # must have 'bit.ly' and and alpha-numeric code
-    components = bit_id.split('/')
-    if not components[0] == 'bit.ly':
-        return False
-    if not components[1].isalnum():
-        return False
-
-    # then it is a valid bit.ly ID
-    return True
-
-
-def validate(k, l, s):
-    """
-    Validate the api key, the long URL, and the bit.ly ID short link URL, exiting if invalid
-    :param k: API key
-    :param l: a URL
-    :param s: a bit.ly ID
-    """
-    if not k.isalnum() or not k.islower() or not len(k) == 40:
-        print('fail: invalid API key', file=sys.stderr)
-        exit(1)
-    if not validators.url(l):
-        print('fail: invalid URL', file=sys.stderr)
-        exit(1)
-    if not validate_id(s):
-        print('fail: invalid bit.ly ID', file=sys.stderr)
-        exit(1)
-
-
 def create_short_url(key, long, short):
     """
     Create a bit.ly ID given a long URL
@@ -101,9 +61,6 @@ def create_short_url(key, long, short):
     :param short: a properly-formatted bit.ly ID
     :return: status code of the result
     """
-    # validate the api key, the long URL, and the bit.ly ID short link URL
-    validate(key, long, short)
-
     # insert the api key into the request headers
     headers = {
         'Authorization': 'Bearer {}'.format(key),
