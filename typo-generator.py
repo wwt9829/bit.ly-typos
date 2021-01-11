@@ -167,7 +167,8 @@ def make_typos(string):
     """
     for character in string:
         if not character.isalnum():
-            print("Error: string contains non-alphanumeric characters!")
+            # TODO: exception handling
+            print("fail: string contains non-alphanumeric characters")
             exit()
 
     # the list to append typos to
