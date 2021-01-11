@@ -3,6 +3,7 @@ from http import HTTPStatus
 import json
 import requests
 import sys
+import validators
 
 # TODO: exception handling so the program can continue making URLs if one fails
 
@@ -11,7 +12,7 @@ def create_link(head, long_url):
     """
     Shortens a long URL into a bit.ly short link URL
     :param head: request headers (API key and content type)
-    :param long_url: a properly-formatted URL (TODO: implement a check for this)
+    :param long_url: a properly-formatted URL
     :return: a properly-formatted bit.ly short link URL
     """
     # convert the URL parameters to JSON
@@ -27,7 +28,7 @@ def create_link(head, long_url):
     response = requests.post('https://api-ssl.bitly.com/v4/shorten', headers=head, data=data)
     re_json = json.loads(response.content)
     try:
-        short_url = re_json["link"]
+        short_url = re_json['link']
         if response.status_code == HTTPStatus.CREATED:
             # the response returned a CREATED status code, return CREATED and the URL
             return HTTPStatus.CREATED, short_url
@@ -36,13 +37,13 @@ def create_link(head, long_url):
             return HTTPStatus.OK, short_url
         else:
             # the response returned something else, print the error and exit the program
-            print("fail:", response.status_code)
+            print('fail:', response.status_code)
             exit()
 
     except KeyError:
         # the JSON content couldn't be found, print the error and exit the program
         # TODO: print the actual error
-        print("fail: error reading JSON.")
+        print('fail: error reading JSON')
         exit()
 
 
@@ -50,8 +51,8 @@ def update_custom(head, old_link, new_link):
     """
     Changes the ending of a bit.ly ID
     :param head: request headers (API key and content type)
-    :param old_link: a bitlink ID to change
-    :param new_link: an unused bitlink ID
+    :param old_link: a properly-formatted bitlink ID to change
+    :param new_link: an unused, properly-formatted bitlink ID
     :return: boolean indicating the status of the change
     """
     # convert the URL parameters to JSON
@@ -71,21 +72,52 @@ def update_custom(head, old_link, new_link):
         return HTTPStatus.OK
     else:
         # the response returned something else, exit the program
-        print('fail:', response.status_code, ".")
+        print('fail:', response.status_code)
         exit()
 
 
-def create_short_url(api_key, long, short):
+def validate_id(bit_id):
+    """
+    Determines if a given bit.ly ID is properly formatted
+    :param bit_id: the bit.ly ID to be evaluated
+    :return: ID validity, as a boolean
+    """
+    # must have a /
+    if '/' not in bit_id:
+        return False
+
+    # must have 'bit.ly' and and alpha-numeric code
+    components = bit_id.split('/')
+    if not components[0] == 'bit.ly':
+        return False
+    if not components[1].isalnum():
+        return False
+
+    # then it is a valid bit.ly ID
+    return True
+
+
+def create_short_url(key, long, short):
     """
     Create a bit.ly ID given a long URL
-    :param api_key: the bit.ly API key for the user
+    :param key: the bit.ly API key for the user
     :param long: a properly-formatted long URL
     :param short: a properly-formatted bit.ly ID
     :return: status code of the result
     """
+    # validate the api key, the long URL, and the bit.ly ID short link URL
+    if not key.isalnum() or not key.islower() or not len(key) == 40:
+        print('fail: invalid API key')
+    if not validators.url(long):
+       print('fail: invalid URL')
+       exit()
+    if not validate_id(short):
+        print('fail: invalid bit.ly ID')
+        exit()
+
     # insert the api key into the request headers
     headers = {
-        'Authorization': 'Bearer {}'.format(api_key),
+        'Authorization': 'Bearer {}'.format(key),
         'Content-Type': 'application/json',
     }
 
@@ -109,28 +141,22 @@ def create_short_url(api_key, long, short):
     return result
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # check to see if the API key was supplied in program arguments
     if len(sys.argv) != 2:
-        print("Argument error: missing API key")
+        print('Argument error: missing API key')
         exit()
-    # TODO: validation of api key
     api_key = sys.argv[1]
 
-    # the URL to shorten
-    # TODO: URL checking
-    url_to_shorten = input("Enter a properly-formatted URL to shorten:")
-
-    # the custom bit.ly ID to use
-    # TODO: URL checking
-    change_to = input("Enter a new properly formatted bit.ly ID to shorten to:")
+    url_to_shorten = input('Enter a URL to shorten:')
+    change_to = input('Enter a new properly formatted bit.ly ID to shorten to:')
 
     # shorten the URL
-    print('Shortening', url_to_shorten, 'to', 'https://'+change_to, 'bit.ly link', end="...")
     result = create_short_url(api_key, url_to_shorten, change_to)
 
     # print the result
+    # TODO: better method of differentiating between fail types
     if result == HTTPStatus.OK:
-        print("done!")
+        print('Success!')
     else:
-        print("error:", result)
+        print('fail:', result)
