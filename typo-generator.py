@@ -165,6 +165,11 @@ def make_typos(string):
     Apply the typo operations
     :param string: a string to generate typos with
     """
+    for character in string:
+        if not character.isalnum():
+            print("Error: string contains non-alphanumeric characters!")
+            exit()
+
     # the list to append typos to
     typo_list = []
 
