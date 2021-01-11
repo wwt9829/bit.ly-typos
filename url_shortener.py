@@ -140,7 +140,7 @@ def create_short_url(key, long, short):
 if __name__ == '__main__':
     # check to see if the API key was supplied in program arguments, and exit if not
     if len(sys.argv) != 2:
-        print('Argument error: missing API key')
+        print('argument error: missing API key', file=sys.stderr)
         exit(1)
     api_key = sys.argv[1]
 
