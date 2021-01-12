@@ -13,7 +13,7 @@ Generate and register common typos for your bit.ly links
   * Missed keys*
   * Inserted keys*
 
-**Only supports 1 missed key/inserted key currently*
+**Only supports 1 missed or inserted key per link, currently*
 
 ## Requirements
 * Python 3
@@ -27,7 +27,7 @@ wyatt@wyatt-pc:~# ./bitly_typo_creator.py <bit.ly api key>
 Enter a bit.ly ID to generate typos for: bit.ly/example
 Enter a URL to redirect the typos to: https://example.com
 
-Attempting to create 305 bit.ly typos...
+Attempting to create 58 bit.ly typos...
 Creating bit.ly/xample
 ...
 
