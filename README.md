@@ -10,10 +10,10 @@ Generate and register common typos for your bit.ly links
   * Skipped letters
   * Double letters
   * Reversed letters
-  * Missed keys*
-  * Inserted keys*
+  * Missed keys
+  * Inserted keys
 
-**Only supports 1 missed or inserted key per link, currently*
+**Only supports 1 kind of typo per generated link, currently*
 
 ## Requirements
 * Python 3
