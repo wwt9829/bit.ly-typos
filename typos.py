@@ -1,7 +1,8 @@
 from http import HTTPStatus
+import os
 import sys
 from typo_generator import make_typos
-from url_shortener import create_short_url
+from bitly_url_shortener import create_short_url
 import validators
 
 
@@ -94,18 +95,38 @@ def create_bitly_typos(key, bitly_link, redirect_url):
 
 
 if __name__ == '__main__':
-    # check to see if the API key was supplied in program arguments, and exit if not
-    if len(sys.argv) != 2:
-        print('argument error: missing API key', file=sys.stderr)
+    # check to see if the API keys file exists
+    if not os.path.isfile("api_keys.txt"):
+        print('file error: missing api_keys.txt', file=sys.stderr)
         exit(1)
-    api_key = sys.argv[1]
+
+    # load the API keys
+    bitly_api_key = ""
+
+    with open("api_keys.txt", "r") as api_keys:
+        for line in api_keys:
+            if "bitly:" in line:
+                try:
+                    bitly_api_key = line.strip().split()[1]
+                except IndexError:
+                    print('file error: Bit.ly API key missing', file=sys.stderr)
+                    exit(1)
+            else:
+                print('file error: no API keys identified', file=sys.stderr)
+                exit(1)
 
     # get the bit.ly ID and redirect URL from the user
-    bitlink = input('Enter a bit.ly ID to generate typos for:')
+    shortlink = input('Enter a shortlink (bit.ly) to generate typos for:')
     redirect = input('Enter a URL to redirect the typos to:')
 
     # create the links
-    links = create_bitly_typos(api_key, bitlink, redirect)
+    links = []
+
+    if "bit.ly" in shortlink:
+        links = create_bitly_typos(bitly_api_key, shortlink, redirect)
+    else:
+        print('shortlink error: shortlink provided is not a supported shortlink', file=sys.stderr)
+        exit(1)
 
     if len(links) != 0:
         # print the links if successful
