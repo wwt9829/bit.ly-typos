@@ -1,6 +1,7 @@
 from urllib.parse import urlparse
 from http import HTTPStatus
 import json
+import os
 import requests
 import sys
 
@@ -72,8 +73,10 @@ def create_short_url(key, long, short):
 
     # return details of the result if unsuccessful
     if ((result.status_code != HTTPStatus.OK) and (result.status_code != HTTPStatus.CREATED)) or bitly_link is None:
-        print('fail: error', result.status_code, 'creating the initial short link from', long, file=sys.stderr)
-        print(result.content, file=sys.stderr)
+
+        result_content = json.loads(result.content.decode('utf-8'))
+        message = result_content.get('message')
+        print('fail: error', result.status_code, 'creating the initial short link from', long, "due to", message, file=sys.stderr)
         return result
 
     # parse the HTTP link to a bit.ly ID
@@ -86,20 +89,36 @@ def create_short_url(key, long, short):
     # return details of the result if unsuccessful
     if result.status_code != HTTPStatus.OK:
         # the response returned something else
+        result_content = json.loads(result.content.decode('utf-8'))
+        message = result_content.get('message')
         print('fail: error', result.status_code, 'creating new short link', short, 'from generated link', bitly_id,
-              'for', long, file=sys.stderr)
-        print(result.content, file=sys.stderr)
+              'for', long, "due to", message, file=sys.stderr)
+        return result
 
     # return the status code of the change
     return result
 
 
 if __name__ == '__main__':
-    # check to see if the API key was supplied in program arguments, and exit if not
-    if len(sys.argv) != 2:
-        print('argument error: missing API key', file=sys.stderr)
+    # check to see if the API keys file exists
+    if not os.path.isfile("api_keys.txt"):
+        print('file error: missing api_keys.txt', file=sys.stderr)
         exit(1)
-    api_key = sys.argv[1]
+
+    # load the API keys
+    bitly_api_key = ""
+
+    with open("api_keys.txt", "r") as api_keys:
+        for line in api_keys:
+            if "bitly:" in line:
+                try:
+                    bitly_api_key = line.strip().split()[1]
+                except IndexError:
+                    print('file error: Bit.ly API key missing or formatted improperly', file=sys.stderr)
+                    exit(1)
+            else:
+                print('file error: no API keys identified', file=sys.stderr)
+                exit(1)
 
     url_to_shorten = input('Enter a URL to shorten:')
     change_to = input('Enter a new bit.ly ID to shorten to:')
