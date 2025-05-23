@@ -26,6 +26,9 @@ def create_link(head, long_url):
     response = requests.post('https://api-ssl.bitly.com/v4/shorten', headers=head, data=data)
     re_json = json.loads(response.content)
     try:
+        if re_json["message"] == "API_USAGE_LIMIT_EXCEEDED":
+            print("bit.ly error: API usage limit exceeded", file=sys.stderr)
+            exit(1)
         short_url = re_json['link']
     except KeyError:
         # the JSON content couldn't be found, the error will be printed in the return
