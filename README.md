@@ -1,7 +1,5 @@
-<img src="bitly-typos.png" alt="bit.ly Typos logo" width="200"/>
-
-# bit.ly Typos
-Generate and register common typos for your bit.ly links
+# Typos
+Generate and register common typos for your shortlinks.
 
 ## Features
 * Creates bit.ly links
@@ -17,14 +15,14 @@ Generate and register common typos for your bit.ly links
 
 ## Requirements
 * Python 3
-* bit.ly API key
+* bit.ly access token (free token can be obtained from https://app.bitly.com/settings/api)
 * [requests](https://pypi.org/project/requests/)
 * [validators](https://pypi.org/project/validators/)
 
 ## Usage
 ```
-wyatt@wyatt-pc:~# ./bitly_typo_creator.py <bit.ly api key>
-Enter a bit.ly ID to generate typos for: bit.ly/example
+wyatt@wyatt-pc:~# ./typos.py <bit.ly api key>
+Enter a shortlink (bit.ly) to generate typos for: bit.ly/example
 Enter a URL to redirect the typos to: https://example.com
 
 Attempting to create 58 bit.ly typos...
