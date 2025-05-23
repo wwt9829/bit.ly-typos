@@ -142,6 +142,8 @@ def create_bitly_typos(key, bitly_link, redirect_url, options):
     :param options: a dictionary of options selected by the user
     :return: a list of successfully-created bit.ly hyperlinks
     """
+    # validate the api key, the long URL, and the bit.ly ID short link URL
+    validate(key, redirect_url, bitly_link)
 
     # maintain a list of successfully-generated bit.ly links
     success_list = []
