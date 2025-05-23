@@ -27,9 +27,9 @@ def create_link(head, long_url):
     re_json = json.loads(response.content)
     try:
         short_url = re_json['link']
-    except KeyError as ke:
-        # the JSON content couldn't be found, print the error
-        print('KeyError:', ke, file=sys.stderr)
+    except KeyError:
+        # the JSON content couldn't be found, the error will be printed in the return
+        pass
 
     return response, short_url
 
