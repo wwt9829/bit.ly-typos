@@ -46,14 +46,18 @@ def skip_letter(keyword, list):
     :param keyword: a keyword to generate typos for
     :param list: the list of typos to append to
     """
+    skip_list = []
+
     i = 0
     while i < len(keyword):
         # skip a letter
         new_word = keyword[0:i] + keyword[i+1:]
 
-        list.append(new_word)
+        skip_list.append(new_word)
         i += 1
 
+    print("Skip:", skip_list)
+    list += skip_list
 
 def double_letter(keyword, list):
     """
@@ -61,14 +65,18 @@ def double_letter(keyword, list):
     :param keyword: a keyword to generate typos for
     :param list: the list of typos to append to
     """
+    double_list = []
+
     i = 0
     while i < len(keyword):
         # duplicate a letter
         new_word = keyword[0:i+1] + keyword[i] + keyword[i + 1:]
 
-        list.append(new_word)
+        double_list.append(new_word)
         i += 1
 
+    print("Double:", double_list)
+    list += double_list
 
 def reverse_letters(keyword, list):
     """
@@ -76,21 +84,27 @@ def reverse_letters(keyword, list):
     :param keyword: a keyword to generate typos for
     :param list: the list of typos to append to
     """
+    reverse_list = []
+
     i = 0
     while i < len(keyword) - 1:
         # reverse a letter
         new_word = keyword[0:i] + keyword[i + 1] + keyword[i] + keyword[i + 2:]
 
-        list.append(new_word)
+        reverse_list.append(new_word)
         i += 1
 
+    print("Reverse:", reverse_list)
+    list += reverse_list
 
-def missed_key(keyword, list):
+def miss_key(keyword, list):
     """
     Generate all keywords with a missed key (assume only one missed key per generated word)
     :param keyword: a keyword to generate typos for
     :param list: the list of typos to append to
     """
+    miss_list = []
+
     i = 0
     j = 0
     capital = False
@@ -115,57 +129,47 @@ def missed_key(keyword, list):
             new_word = keyword[0:i] + replacement_key + keyword[i + 1:]
 
             j += 1
-            list.append(new_word)
+            miss_list.append(new_word)
 
         i += 1
         j = 0
         capital = False
 
+    print("Miss:", miss_list)
+    list += miss_list
 
-def inserted_key(keyword, list):
+def change_case(keyword, list):
     """
-    Generate all keywords with an inserted key (assume only one inserted key per generated word)
+    Generate all keywords with a letter changed case
     :param keyword: a keyword to generate typos for
     :param list: the list of typos to append to
     """
+    case_list = []
+
     i = 0
-    j = 0
-    capital = False
-
     while i < len(keyword):
-        # capital letter detection
+        new_word = ""
+
         if keyword[i].isupper():
-            character = keyword[i].lower()
-            capital = True
-        else:
-            character = keyword[i]
+            # make uppercase lowercase
+            new_word = keyword[0:i] + keyword[i].lower() + keyword[i + 1:]
+        elif keyword[i].islower():
+            # make lowercase uppercase
+            new_word = keyword[0:i] + keyword[i].upper() + keyword[i + 1:]
 
-        while j < len(key_list[character]):
-            if capital:
-                # if the letter is capital, make the mapping capital as well
-                replacement_key = key_list[character][j].upper()
-            else:
-                # if the letter is not capital, do not change the case of the letter
-                replacement_key = key_list[character][j]
-
-            # insert a letter in front
-            new_word_1 = keyword[0:i] + replacement_key + keyword[i:]
-            #insert a letter behind
-            new_word_2 = keyword[0:i] + keyword[i] + replacement_key + keyword[i + 1:]
-
-            j += 1
-            list.append(new_word_1)
-            list.append(new_word_2)
+        if new_word != "":
+            case_list.append(new_word)
 
         i += 1
-        j = 0
-        capital = False
 
+    print("Case:", case_list)
+    list += case_list
 
-def make_typos(string):
+def make_typos(string, options):
     """
     Apply the typo operations
     :param string: a string to generate typos with
+    :param options: a dictionary of options for which typos to generate
     """
     # check if the string is alphanumeric, exiting if not
     for character in string:
@@ -176,11 +180,17 @@ def make_typos(string):
     # the list to append typos to
     typo_list = []
 
-    skip_letter(string, typo_list)
-    double_letter(string, typo_list)
-    reverse_letters(string, typo_list)
-    missed_key(string, typo_list)
-    inserted_key(string, typo_list)
+    # create the necessary typos
+    if options["skip"]:
+        skip_letter(string, typo_list)
+    if options["double"]:
+        double_letter(string, typo_list)
+    if options["reverse"]:
+        reverse_letters(string, typo_list)
+    if options["miss"]:
+        miss_key(string, typo_list)
+    if options["case"]:
+        change_case(string, typo_list)
 
     return typo_list
 
