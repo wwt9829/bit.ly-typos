@@ -1,3 +1,4 @@
+import argparse
 from http import HTTPStatus
 import os
 import sys
@@ -71,6 +72,48 @@ def validate(k, l, s):
         print('shortlink error: invalid bit.ly ID', file=sys.stderr)
         exit(1)
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Generate and register common typos for your shortlinks!")
+
+    # required positional arguments
+    parser.add_argument("shortlink", help="The original bit.ly link")
+    parser.add_argument("redirect_url", help="The URL to redirect all typos to")
+
+    # optional typo generation flags
+    parser.add_argument("-s", "--skip", action="store_true",
+                        help="! skip each letter (e.g., bit.ly/example → bit.ly/xample)")
+    parser.add_argument("-d", "--double", action="store_true",
+                        help="* double each letter (e.g., bit.ly/example → bit.ly/eexample)")
+    parser.add_argument("-r", "--reverse", action="store_true",
+                        help="* reverse each letter (e.g., bit.ly/example → bit.ly/xeample)")
+    parser.add_argument("-m", "--miss", action="store_true",
+                        help="! mistype each key to an adjacent key (e.g., bit.ly/example → bit.ly/wxample)")
+    parser.add_argument("-c", "--case", action="store_true",
+                        help="! change case of each letter (e.g., bit.ly/example → bit.ly/Example)")
+
+    args = parser.parse_args()
+
+    # apply defaults if no options are explicitly passed
+    if not any([args.skip, args.double, args.reverse, args.miss, args.case]):
+        args.skip = True
+        args.miss = True
+        args.case = True
+
+        print("Running via cmd | Default typo generation options enabled:", end=" ")
+        for opt in ["skip", "double", "reverse", "miss", "case"]:
+            if getattr(args, opt):
+                print(opt, end=" ")
+        print("\n")
+
+    else:
+        # print options that are enabled
+        print("Running via cmd | Typo generation options enabled:", end=" ")
+        for opt in ["skip", "double", "reverse", "miss", "case"]:
+            if getattr(args, opt):
+                print(opt, end=" ")
+        print("\n")
+
+    return args
 
 def select_options():
     """
@@ -98,16 +141,16 @@ def select_options():
         print("Select options for typo generation (y to confirm, any other key to skip):")
         print("! options are the default options, and therefore are strongly recommended.")
         print("Letter-based options:")
-        if input("\t! Skip each letter? (ex: bit.ly/example to bit.ly/xample): ").strip() == 'y':
+        if input("\t! Skip each letter? (ex: bit.ly/example → bit.ly/xample): ").strip() == 'y':
             options['skip'] = True
-        if input("\t* Double each letter? (ex: bit.ly/example to bit.ly/eexample): ").strip() == 'y':
+        if input("\t* Double each letter? (ex: bit.ly/example → bit.ly/eexample): ").strip() == 'y':
             options['double'] = True
-        if input("\t* Reverse each letter? (ex: bit.ly/example to bit.ly/xeample): ").strip() == 'y':
+        if input("\t* Reverse each letter? (ex: bit.ly/example → bit.ly/xeample): ").strip() == 'y':
             options['reverse'] = True
         print("Key-based options:")
-        if input("\t! Mistype each key to an adjacent key? (ex: bit.ly/example to bit.ly/wxample): ").strip() == 'y':
+        if input("\t! Mistype each key to an adjacent key? (ex: bit.ly/example → bit.ly/wxample): ").strip() == 'y':
             options['miss'] = True
-        if input("\t! Change case of letter? (ex: bit.ly/example to bit.ly/Example): ").strip() == 'y':
+        if input("\t! Change case of letter? (ex: bit.ly/example → bit.ly/Example): ").strip() == 'y':
             options['case'] = True
 
         if options == {'skip': False, 'double': False, 'reverse': False, 'miss': False, 'case': False}:
@@ -181,12 +224,29 @@ if __name__ == '__main__':
     # read the API keys
     bitly_api_key = validate_api_file()
 
-    # get the shortlink ID and redirect URL from the user
-    shortlink = input('Enter a shortlink (bit.ly) to generate typos for: ').strip()
-    redirect = input('Enter a URL to redirect the typos to: ').strip()
+    # initialize values to be assigned
+    shortlink = ""
+    redirect = ""
+    options = {}
 
-    # select which typos to generate
-    options = select_options()
+    if len(sys.argv) > 1:
+        args = parse_arguments()
+
+        # assign values
+        shortlink = args.shortlink
+        redirect = args.redirect_url
+        options = {'skip': args.skip, 'double': args.double, 'reverse': args.reverse, 'miss': args.miss, 'case': args.case}
+
+    else:
+        # show command line usage
+        print("cmd usage: typos.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] shortlink redirect_url")
+
+        # get the shortlink ID and redirect URL from the user
+        shortlink = input('Enter a shortlink (bit.ly) to generate typos for: ').strip()
+        redirect = input('Enter a URL to redirect the typos to: ').strip()
+
+        # select which typos to generate
+        options = select_options()
 
     # create the links
     links = []
