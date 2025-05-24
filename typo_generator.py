@@ -40,7 +40,7 @@ key_list = {'a': ['q', 'w', 's', 'x', 'z'],
             }
 
 
-def skip_letter(keyword, list):
+def skip_letter(keyword, list, debug):
     """
     Generates all keywords with a letter skipped
     :param keyword: a keyword to generate typos for
@@ -56,10 +56,11 @@ def skip_letter(keyword, list):
         skip_list.append(new_word)
         i += 1
 
-    print("Skip:", skip_list)
+    if debug:
+        print("Skip:", skip_list)
     list += skip_list
 
-def double_letter(keyword, list):
+def double_letter(keyword, list, debug):
     """
     Generates all keywords with a letter duplicated
     :param keyword: a keyword to generate typos for
@@ -75,10 +76,11 @@ def double_letter(keyword, list):
         double_list.append(new_word)
         i += 1
 
-    print("Double:", double_list)
+    if debug:
+        print("Double:", double_list)
     list += double_list
 
-def reverse_letters(keyword, list):
+def reverse_letters(keyword, list, debug):
     """
     Generates all keywords with a letter reversed
     :param keyword: a keyword to generate typos for
@@ -94,10 +96,11 @@ def reverse_letters(keyword, list):
         reverse_list.append(new_word)
         i += 1
 
-    print("Reverse:", reverse_list)
+    if debug:
+        print("Reverse:", reverse_list)
     list += reverse_list
 
-def miss_key(keyword, list):
+def miss_key(keyword, list, debug):
     """
     Generate all keywords with a missed key (assume only one missed key per generated word)
     :param keyword: a keyword to generate typos for
@@ -135,10 +138,11 @@ def miss_key(keyword, list):
         j = 0
         capital = False
 
-    print("Miss:", miss_list)
+    if debug:
+        print("Miss:", miss_list)
     list += miss_list
 
-def change_case(keyword, list):
+def change_case(keyword, list, debug):
     """
     Generate all keywords with a letter changed case
     :param keyword: a keyword to generate typos for
@@ -162,10 +166,11 @@ def change_case(keyword, list):
 
         i += 1
 
-    print("Case:", case_list)
+    if debug:
+        print("Case:", case_list)
     list += case_list
 
-def make_typos(string, options):
+def make_typos(string, options, debug):
     """
     Apply the typo operations
     :param string: a string to generate typos with
@@ -182,15 +187,15 @@ def make_typos(string, options):
 
     # create the necessary typos
     if options["skip"]:
-        skip_letter(string, typo_list)
+        skip_letter(string, typo_list, debug)
     if options["double"]:
-        double_letter(string, typo_list)
+        double_letter(string, typo_list, debug)
     if options["reverse"]:
-        reverse_letters(string, typo_list)
+        reverse_letters(string, typo_list, debug)
     if options["miss"]:
-        miss_key(string, typo_list)
+        miss_key(string, typo_list, debug)
     if options["case"]:
-        change_case(string, typo_list)
+        change_case(string, typo_list, debug)
 
     return typo_list
 
@@ -200,7 +205,7 @@ if __name__ == "__main__":
     original_string = input("Enter a string to create typos:")
 
     # get a list of generated typos
-    typos = make_typos(original_string)
+    typos = make_typos(original_string, True)
 
     # print the typo list
     for typo in typos:

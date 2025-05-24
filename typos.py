@@ -97,10 +97,16 @@ def parse_arguments():
                         help="change case of each letter (e.g., bit.ly/example → bit.ly/Example) (default)")
 
     # optional output and interaction arguments
+    parser.add_argument("-P", "--preview", action="store_true", help="preview the typos to be generated before generating them (good idea on first run of a shortlink)")
     parser.add_argument("-B", "--BYPASS", action="store_true",
-                        help="bypass the API call confirmation prompt (not recommended for first run)")
+                        help="bypass the API call confirmation prompt (not recommended on first run of a shortlink)")
 
     args = parser.parse_args()
+
+    # don't allow preview and bypass at the same time as it's probably dumb
+    if args.preview and args.BYPASS:
+        print("args error: preview and bypass options are mutually exclusive as a precaution", file=sys.stderr)
+        exit(1)
 
     # apply defaults if no options are explicitly passed
     if not any([args.skip, args.double, args.reverse, args.miss, args.case]):
@@ -167,8 +173,13 @@ def select_options():
             print("options error: no options selected", file=sys.stderr)
             exit(1)
 
+    preview = False
+    preview_input = input("Do you want to preview the typos to be generated before generating them (good idea on first run of a shortlink)? (y) ")
+    if preview_input == "y":
+        preview = True
+
     # return the selected options
-    return options
+    return preview, options
 
 
 def append_bitly_url(typo_list):
@@ -186,7 +197,7 @@ def append_bitly_url(typo_list):
     return url_list
 
 
-def create_bitly_typos(key, bitly_link, redirect_url, options, bypass):
+def create_bitly_typos(key, bitly_link, redirect_url, options, debug, bypass):
     """
     Create a list of typos for a bit.ly link and register them with a URL
     :param key: a bit.ly API key
@@ -203,7 +214,7 @@ def create_bitly_typos(key, bitly_link, redirect_url, options, bypass):
 
     # create a list of bit.ly ID typos
     path = bitly_link.split('/')[1]
-    typos = make_typos(path, options)
+    typos = make_typos(path, options, debug)
     bitly_typos = append_bitly_url(typos)
 
     # confirm the number of typos to generate with the user if not bypassed
@@ -240,6 +251,7 @@ if __name__ == '__main__':
     redirect = ""
     options = {}
     bypass = False
+    debug = False
 
     if len(sys.argv) > 1:
         args = parse_arguments()
@@ -249,6 +261,7 @@ if __name__ == '__main__':
         redirect = args.redirect_url
         options = {'skip': args.skip, 'double': args.double, 'reverse': args.reverse, 'miss': args.miss, 'case': args.case}
         bypass = args.BYPASS
+        debug = args.preview
 
     else:
         # show command line usage
@@ -260,13 +273,13 @@ if __name__ == '__main__':
         print()
 
         # select which typos to generate
-        options = select_options()
+        debug, options = select_options()
 
     # create the links
     links = []
 
     if "bit.ly" in shortlink:
-        links = create_bitly_typos(bitly_api_key, shortlink, redirect, options, bypass)
+        links = create_bitly_typos(bitly_api_key, shortlink, redirect, options, debug, bypass)
     else:
         print('shortlink error: shortlink provided is not a supported shortlink', file=sys.stderr)
         exit(1)
