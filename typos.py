@@ -95,6 +95,7 @@ def parse_arguments():
                         help="mistype each key to an adjacent key (e.g., bit.ly/example → bit.ly/wxample) (default)")
     parser.add_argument("-c", "--case", action="store_true",
                         help="change case of each letter (e.g., bit.ly/example → bit.ly/Example) (default)")
+    parser.add_argument("-A", "--all", action="store_true", help="generate all typos (not recommended on first run of a shortlink)")
 
     # optional output and interaction arguments
     parser.add_argument("-P", "--preview", action="store_true", help="preview the typos to be generated before generating them (good idea on first run of a shortlink)")
@@ -108,8 +109,18 @@ def parse_arguments():
         print("args error: preview and bypass options are mutually exclusive as a precaution", file=sys.stderr)
         exit(1)
 
-    # apply defaults if no options are explicitly passed
-    if not any([args.skip, args.double, args.reverse, args.miss, args.case]):
+    if args.all:
+        # apply all arguments if --all is passed
+        args.skip = True
+        args.double = True
+        args.reverse = True
+        args.miss = True
+        args.case = True
+
+        print("Running via cmd | ALL typo generation options enabled: skip double reverse miss case\n")
+
+    elif not any([args.skip, args.double, args.reverse, args.miss, args.case]):
+        # apply defaults if no options are explicitly passed
         args.skip = True
         args.miss = True
         args.case = True
@@ -140,9 +151,9 @@ def select_options():
     options = {'skip': True, 'double': False, 'reverse': False, 'miss': True, 'case': True}
 
     # explain the simple options to the user and perform selection
-    print("Press ENTER to create the most common typos (recommended).")
-    print("Press c to customize typo generation.")
-    print("Press a to create all possible typos.")
+    print("Press ENTER to create the most common typos (default).")
+    print("Press c to customize typo generation (-sdrmc).")
+    print("Press a to create all possible typos (-A).")
 
     selection = input()
     while selection != "" and selection != "a" and selection != "c":
@@ -219,12 +230,12 @@ def create_bitly_typos(key, bitly_link, redirect_url, options, debug, bypass):
 
     # confirm the number of typos to generate with the user if not bypassed
     if not bypass:
-        print("This will use", len(bitly_typos), "API calls. Press ENTER to confirm or any other key to exit... (-B to bypass this warning in cmd) ", end="")
+        print("This will use", len(bitly_typos), "API calls. Press ENTER to confirm or any other key to exit... (-B to bypass this warning in cmd) ")
         if input() != "":
             exit(0)
 
     # link the typo'd bit.ly IDs to a long URL
-    print('\nAttempting to create', len(bitly_typos), 'bit.ly typos...')
+    print('Attempting to create', len(bitly_typos), 'bit.ly typos...')
     for bitly_typo in bitly_typos:
         print('Creating', bitly_typo)
         result = create_short_url(key, redirect_url, bitly_typo)
@@ -266,7 +277,7 @@ if __name__ == '__main__':
 
     else:
         # show command line usage
-        print("cmd usage: typos.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url\n")
+        print("cmd usage: typos.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-A --all] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url\n")
 
         # get the shortlink ID and redirect URL from the user
         shortlink = input('Enter a shortlink (bit.ly) to generate typos for: ').strip()
