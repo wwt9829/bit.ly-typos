@@ -4,14 +4,12 @@ Generate and register common typos for your shortlinks.
 ## Features
 * Creates bit.ly links
 * Modifies bit.ly links to use custom endings
-* Currently generates links based on
+* Currently generates 1 typo per link based on
   * Skipped letters
   * Double letters
   * Reversed letters
   * Missed keys
-  * Inserted keys
-
-**Only supports 1 kind of typo per generated link, currently*
+  * Changed case
 
 ## Requirements
 * Python 3
@@ -20,18 +18,52 @@ Generate and register common typos for your shortlinks.
 * [validators](https://pypi.org/project/validators/)
 
 ## Usage
-```
-wyatt@wyatt-pc:~# ./typos.py <bit.ly api key>
-Enter a shortlink (bit.ly) to generate typos for: bit.ly/example
-Enter a URL to redirect the typos to: https://example.com
 
-Attempting to create 58 bit.ly typos...
+### Interactive
+```
+wyatt@wyatt-pc:~# ./typos.py
+############################
+# SHORTLINK TYPO GENERATOR #
+############################
+Generate and register common typos for your shortlinks! | by Wyatt Tauber (wyatttauber.com)
+cmd usage: typos.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-A --all] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url
+
+Enter a shortlink (bit.ly) to generate typos for: bit.ly/example
+Enter a URL to redirect the typos to: https://example.com/
+
+Press ENTER to create the most common typos (default).
+Press c to customize typo generation (-sdrmc).
+Press a to create all possible typos (-A).
+
+Do you want to preview the typos to be generated before generating them (good idea on first run of a shortlink) (-P)? (y) y
+Skip: ['xample', 'eample', 'exmple', 'exaple', 'examle', 'exampe', 'exampl']
+Miss: ['wxample', '3xample', '4xample', 'rxample', 'fxample', 'dxample', 'sxample', ...]
+Case: ['Example', 'eXample', 'exAmple', 'exaMple', 'examPle', 'exampLe', 'examplE']
+This will use 46 API calls. Press ENTER to confirm or any other key to exit... (-B to bypass this warning in cmd) 
+
+Attempting to create 46 bit.ly typos...
 Creating bit.ly/xample
 ...
 
-Successfully generated 56 bit.ly typos that redirect to https://example.com
+Generated 42 bit.ly typos that redirect to https://example.com/
 https://bit.ly/xample
 ...
+```
 
-Complete. Exiting...
+### CMD
+```
+wyatt@wyatt-pc:~# ./typos.py bit.ly/example https://example.com -B
+############################
+# SHORTLINK TYPO GENERATOR #
+############################
+Generate and register common typos for your shortlinks! | by Wyatt Tauber (wyatttauber.com)
+Running via cmd | Default typo generation options enabled: skip miss case 
+
+Attempting to create 46 bit.ly typos...
+Creating bit.ly/xample
+...
+
+Created 42 bit.ly typos that redirect to https://example.com
+https://bit.ly/xample
+...
 ```
