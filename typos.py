@@ -78,7 +78,7 @@ def parse_arguments():
     Parse and validate command line arguments
     :return: an ArgumentParser object with the command line arguments validated
     """
-    parser = argparse.ArgumentParser(description="Generate and register common typos for your shortlinks!")
+    parser = argparse.ArgumentParser()
 
     # required positional arguments
     parser.add_argument("shortlink", help="The original bit.ly link")
@@ -157,16 +157,16 @@ def select_options():
         print("Select options for typo generation (y to confirm, any other key to skip):")
         print("! options are the default options, and therefore are strongly recommended.")
         print("Letter-based options:")
-        if input("\t! Skip each letter? (ex: bit.ly/example → bit.ly/xample): ") == 'y':
+        if input("\t! Skip each letter (-s)? (ex: bit.ly/example → bit.ly/xample): ") == 'y':
             options['skip'] = True
-        if input("\t* Double each letter? (ex: bit.ly/example → bit.ly/eexample): ") == 'y':
+        if input("\t* Double each letter (-d)? (ex: bit.ly/example → bit.ly/eexample): ") == 'y':
             options['double'] = True
-        if input("\t* Reverse each letter? (ex: bit.ly/example → bit.ly/xeample): ") == 'y':
+        if input("\t* Reverse each letter (-r)? (ex: bit.ly/example → bit.ly/xeample): ") == 'y':
             options['reverse'] = True
         print("Key-based options:")
-        if input("\t! Mistype each key to an adjacent key? (ex: bit.ly/example → bit.ly/wxample): ") == 'y':
+        if input("\t! Mistype each key to an adjacent key (-m)? (ex: bit.ly/example → bit.ly/wxample): ") == 'y':
             options['miss'] = True
-        if input("\t! Change case of letter? (ex: bit.ly/example → bit.ly/Example): ") == 'y':
+        if input("\t! Change case of letter (-c)? (ex: bit.ly/example → bit.ly/Example): ") == 'y':
             options['case'] = True
 
         if options == {'skip': False, 'double': False, 'reverse': False, 'miss': False, 'case': False}:
@@ -174,7 +174,7 @@ def select_options():
             exit(1)
 
     preview = False
-    preview_input = input("Do you want to preview the typos to be generated before generating them (good idea on first run of a shortlink)? (y) ")
+    preview_input = input("Do you want to preview the typos to be generated before generating them (good idea on first run of a shortlink) (-P)? (y) ")
     if preview_input == "y":
         preview = True
 
@@ -219,8 +219,9 @@ def create_bitly_typos(key, bitly_link, redirect_url, options, debug, bypass):
 
     # confirm the number of typos to generate with the user if not bypassed
     if not bypass:
-        print("This will use", len(bitly_typos), "API calls. Press ENTER to confirm...", end="")
-        input()
+        print("This will use", len(bitly_typos), "API calls. Press ENTER to confirm or any other key to exit... (-B to bypass this warning in cmd) ", end="")
+        if input() != "":
+            exit(0)
 
     # link the typo'd bit.ly IDs to a long URL
     print('\nAttempting to create', len(bitly_typos), 'bit.ly typos...')
@@ -265,7 +266,7 @@ if __name__ == '__main__':
 
     else:
         # show command line usage
-        print("cmd usage: typos.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] shortlink redirect_url\n")
+        print("cmd usage: typos.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url\n")
 
         # get the shortlink ID and redirect URL from the user
         shortlink = input('Enter a shortlink (bit.ly) to generate typos for: ').strip()
