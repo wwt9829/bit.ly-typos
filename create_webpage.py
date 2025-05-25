@@ -51,3 +51,51 @@ def follow_shortlink(shortlink_url):
     except Exception as e:
         raise RuntimeError("webpage creation error: failed to follow shortlink", shortlink_url, ":", e)
 
+
+def get_site_title(url):
+    """
+    Fetch the title of a web page from a given URL.
+    :param url: the URL of the web page to fetch the title from
+    :return: the title of the web page (or the input URL if the title is not found)
+    """
+    try:
+        # send the GET request
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+
+        # parse the response
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        if soup.title and soup.title.string:
+            # return the title
+            return soup.title.string.strip()
+        else:
+            # return the URL if no title is found
+            return url
+
+    except Exception as e:
+        raise RuntimeError("Failed to fetch site title from", url, ":", e)
+
+
+def sanitize_filename(title):
+    """
+    Replace invalid characters with an underscore
+    :param title: the input filename to be sanitized
+    :return: a sanitized string without invalid characters
+    """
+    return re.sub(r'[\\/*?:"<>|]', '_', title)
+
+
+def replace_placeholders(html, replacements):
+    """
+    Replace placeholders in an HTML string with corresponding values from a
+    dictionary of replacements
+    :param html: the HTML string containing placeholders to be replaced.
+    :param replacements: dict[str, str]
+        a dictionary containing mappings of placeholder strings to their
+        replacement values.
+    :return: the HTML string with the placeholders replaced
+    """
+    for placeholder, value in replacements.items():
+        html = html.replace(placeholder, value)
+    return html
