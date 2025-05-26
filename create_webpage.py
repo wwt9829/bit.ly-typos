@@ -99,3 +99,48 @@ def replace_placeholders(html, replacements):
     for placeholder, value in replacements.items():
         html = html.replace(placeholder, value)
     return html
+
+
+def process_html_with_shortlink(html, shortlink_url):
+    """
+    Replace placeholders in an html template with information derived
+    from a shortlink URL.
+    :param html: the HTML template containing placeholders to be replaced
+    :param shortlink_url: a valid shortlink URL to be resolved and analyzed
+    :return: the updated HTML with placeholders replaced based on the shortlink
+    """
+    # validate the shortlink URL
+    if not is_valid_url(shortlink_url):
+        raise ValueError("Invalid shortlink URL:", shortlink_url)
+
+    # resolve the shortlink URL to the final destination and get the site title
+    redirection_url = follow_shortlink(shortlink_url)
+    site_title = get_site_title(redirection_url)
+
+    # determine replacement variable values for the HTML template
+    replacements = {
+        "shortlink_link": urlparse(shortlink_url).netloc + urlparse(shortlink_url).path,
+        "shortlink_url": shortlink_url,
+        "redirection_url": redirection_url,
+        "redirection_title": site_title.split("|")[0].strip()
+    }
+
+    # update the HTML template and the filename with the replacements
+    updated_html = replace_placeholders(html, replacements)
+    filename = sanitize_filename(site_title).split("_")[0].strip() + ".html"
+
+    # save the new HTML to the file
+    with open("web/" + filename, "w", encoding="utf-8") as f:
+        f.write(updated_html)
+
+    # print success (errors will be printed above if applicable)
+    print("HTML saved as:", filename)
+
+
+if __name__ == "__main__":
+    # read the HTML template from the file
+    with open("web/index.html", "r", encoding="utf-8") as f:
+        html_template = f.read()
+
+    # replace placeholders in the HTML template with information derived from the shortlink URL
+    process_html_with_shortlink(html_template, "https://bit.ly/xeample")
