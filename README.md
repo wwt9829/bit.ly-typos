@@ -67,3 +67,5 @@ Created 42 bit.ly typos that redirect to https://example.com
 https://bit.ly/xample
 ...
 ```
+
+Original 2021 blog post: [Companies: please stop using free URL shorteners | Wyatt Tauber | Medium](https://blog.wyatttauber.com/companies-please-stop-using-free-url-shorteners-especially-for-pii-forms-a32579e47b99)
