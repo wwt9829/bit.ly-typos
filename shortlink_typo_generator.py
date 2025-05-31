@@ -2,8 +2,8 @@ import argparse
 from http import HTTPStatus
 import os
 import sys
-from typo_generator import make_typos
-from bitly_url_shortener import create_short_url
+from typo_list_generator import make_typos
+from bitly_shortlink_creator import create_short_url
 import validators
 
 def validate_api_file():
@@ -277,7 +277,7 @@ if __name__ == '__main__':
 
     else:
         # show command line usage
-        print("cmd usage: typos.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-A --all] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url\n")
+        print("cmd usage: shortlink_typo_generator.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-A --all] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url\n")
 
         # get the shortlink ID and redirect URL from the user
         shortlink = input('Enter a shortlink (bit.ly) to generate typos for: ').strip()
