@@ -69,6 +69,5 @@ https://bit.ly/xample
 ```
 
 ## Tutorials
-
-* Original 2021 blog post: [Companies: please stop using free URL shorteners | Wyatt Tauber | Medium](https://blog.wyatttauber.com/companies-please-stop-using-free-url-shorteners-especially-for-pii-forms-a32579e47b99)
 * Summer 2025 DSU CSC-848 Cycle 2 video: [Bit.ly Typos | DSU CSC-848 Cycle 2](https://youtu.be/3W7VICp06MI)
+* Original 2021 blog post: [Companies: please stop using free URL shorteners | Wyatt Tauber | Medium](https://blog.wyatttauber.com/companies-please-stop-using-free-url-shorteners-especially-for-pii-forms-a32579e47b99)
