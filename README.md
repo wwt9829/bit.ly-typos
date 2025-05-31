@@ -21,12 +21,12 @@ Generate and register common typos for your shortlinks.
 
 ### Interactive
 ```
-wyatt@wyatt-pc:~# ./typos.py
+wyatt@wyatt-pc:~# ./shortlink-typo-generator.py
 ############################
 # SHORTLINK TYPO GENERATOR #
 ############################
 Generate and register common typos for your shortlinks! | by Wyatt Tauber (wyatttauber.com)
-cmd usage: typos.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-A --all] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url
+cmd usage: shortlink-typo-generator.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-A --all] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url
 
 Enter a shortlink (bit.ly) to generate typos for: bit.ly/example
 Enter a URL to redirect the typos to: https://example.com/
@@ -52,7 +52,7 @@ https://bit.ly/xample
 
 ### CMD
 ```
-wyatt@wyatt-pc:~# ./typos.py bit.ly/example https://example.com -B
+wyatt@wyatt-pc:~# ./shortlink-typo-generator.py bit.ly/example https://example.com -B
 ############################
 # SHORTLINK TYPO GENERATOR #
 ############################
