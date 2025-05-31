@@ -1,4 +1,4 @@
-# Typos
+# Shortlink Typo Generator
 Generate and register common typos for your shortlinks.
 
 ## Features
