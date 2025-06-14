@@ -341,7 +341,7 @@ def create_tinyurl_typos(key, tinyurl_link, redirect_url, options, debug, bypass
             exit(0)
 
     # link the typo'd bit.ly IDs to a long URL
-    print('Attempting to create', len(tinyurl_typos), 'TinyURL typos...')
+    print('Attempting to create', len(tinyurl_typos), 'tinyurl.com typos...')
     print('NOTE: TinyURL WILL report an error if you re-register a shortlink you already own.')
     for tinyurl_typo in tinyurl_typos:
         print('Creating', tinyurl_typo)
@@ -361,7 +361,7 @@ if __name__ == '__main__':
     print("############################")
     print("# SHORTLINK TYPO GENERATOR #")
     print("############################")
-    print("Generate and register common typos for your shortlinks! | by Wyatt Tauber (wyatttauber.com)")
+    print("Generate and register common typos for your shortlinks! (bit.ly or tinyurl.com) | by Wyatt Tauber (wyatttauber.com)")
 
     # read the API keys
     #bitly_api_key, tinyurl_api_key = validate_api_file()

@@ -2,8 +2,8 @@
 Generate and register common typos for your shortlinks.
 
 ## Features
-* Creates bit.ly links
-* Modifies bit.ly links to use custom endings
+* Creates bit.ly and tinyurl.com links
+* Modifies bit.ly and tinyurl.com links to use custom endings
 * Currently generates 1 typo per link based on
   * Skipped letters
   * Double letters
@@ -13,7 +13,8 @@ Generate and register common typos for your shortlinks.
 
 ## Requirements
 * Python 3
-* bit.ly access token (free token can be obtained from https://app.bitly.com/settings/api)
+* Bitly access token (free token can be obtained from https://app.bitly.com/settings/api)
+* TinyURL access token (free token can be obtained from https://tinyurl.com/app/settings/api)
 * [requests](https://pypi.org/project/requests/)
 * [validators](https://pypi.org/project/validators/)
 
@@ -28,7 +29,7 @@ wyatt@wyatt-pc:~# ./shortlink-typo-generator.py
 Generate and register common typos for your shortlinks! | by Wyatt Tauber (wyatttauber.com)
 cmd usage: shortlink-typo-generator.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-A --all] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url
 
-Enter a shortlink (bit.ly) to generate typos for: bit.ly/example
+Enter a shortlink (bit.ly or tinyurl.com) to generate typos for: bit.ly/example
 Enter a URL to redirect the typos to: https://example.com/
 
 Press ENTER to create the most common typos (default).
@@ -52,19 +53,20 @@ https://bit.ly/xample
 
 ### CMD
 ```
-wyatt@wyatt-pc:~# ./shortlink-typo-generator.py bit.ly/example https://example.com -B
+wyatt@wyatt-pc:~# ./shortlink-typo-generator.py tinyurl.com/example https://example.com -B
 ############################
 # SHORTLINK TYPO GENERATOR #
 ############################
 Generate and register common typos for your shortlinks! | by Wyatt Tauber (wyatttauber.com)
 Running via cmd | Default typo generation options enabled: skip miss case 
 
-Attempting to create 46 bit.ly typos...
-Creating bit.ly/xample
+Attempting to create 46 tinyurl.com typos...
+fail: error 422 creating new short link tinyurl.com/xample from generated link tinyurl.com/bdz7zr7d for https://example.com/ due to Alias is not available.
+Creating tinyurl.com/eample
 ...
 
-Created 42 bit.ly typos that redirect to https://example.com
-https://bit.ly/xample
+Created 46 bit.ly typos that redirect to https://example.com
+https://bit.ly/eample
 ...
 ```
 
