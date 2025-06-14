@@ -298,6 +298,7 @@ def create_bitly_typos(key, bitly_link, redirect_url, options, debug, bypass):
 
     # link the typo'd bit.ly IDs to a long URL
     print('Attempting to create', len(bitly_typos), 'bit.ly typos...')
+    print('NOTE: Bitly WILL NOT report an error if you re-register a shortlink you already own.')
     for bitly_typo in bitly_typos:
         print('Creating', bitly_typo)
         result = bitly_shortlink_creator.create_short_url(key, redirect_url, bitly_typo)
@@ -341,6 +342,7 @@ def create_tinyurl_typos(key, tinyurl_link, redirect_url, options, debug, bypass
 
     # link the typo'd bit.ly IDs to a long URL
     print('Attempting to create', len(tinyurl_typos), 'TinyURL typos...')
+    print('NOTE: TinyURL WILL report an error if you re-register a shortlink you already own.')
     for tinyurl_typo in tinyurl_typos:
         print('Creating', tinyurl_typo)
         result = tinyurl_shortlink_creator.create_short_url(key, redirect_url, tinyurl_typo)  # TODO
