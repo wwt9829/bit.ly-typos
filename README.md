@@ -71,5 +71,6 @@ https://tinyurl.com/eample
 ```
 
 ## Tutorials
+* Summer 2025 DSU CSC-848 Cycle 4 video: [Bit.ly Typos - TinyURL Support | DSU CSC-842 Cycle 4](https://youtu.be/1o7K8ULE-Qo)
 * Summer 2025 DSU CSC-848 Cycle 2 video: [Bit.ly Typos | DSU CSC-848 Cycle 2](https://youtu.be/3W7VICp06MI)
 * Original 2021 blog post: [Companies: please stop using free URL shorteners | Wyatt Tauber | Medium](https://blog.wyatttauber.com/companies-please-stop-using-free-url-shorteners-especially-for-pii-forms-a32579e47b99)
