@@ -65,7 +65,7 @@ fail: error 422 creating new short link tinyurl.com/xample from generated link t
 Creating tinyurl.com/eample
 ...
 
-Created 46 tinyurl.com typos that redirect to https://example.com
+Created 24 tinyurl.com typos that redirect to https://example.com
 https://tinyurl.com/eample
 ...
 ```
