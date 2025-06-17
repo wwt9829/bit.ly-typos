@@ -19,6 +19,12 @@ Generate and register common typos for your shortlinks.
 * [validators](https://pypi.org/project/validators/)
 
 ## Usage
+API keys are required to be in the system credential store before running.
+```
+System: system
+Username: bitly [OR] tinyurl
+Password: [API key]
+```
 
 ### Interactive
 ```

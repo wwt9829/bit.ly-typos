@@ -1,7 +1,7 @@
 from urllib.parse import urlparse
 from http import HTTPStatus
 import json
-import os
+import keyring
 import requests
 import sys
 
@@ -104,25 +104,11 @@ def create_short_url(key, long, short):
 
 
 if __name__ == '__main__':
-    # check to see if the API keys file exists
-    if not os.path.isfile("api_keys.txt"):
-        print('file error: missing api_keys.txt', file=sys.stderr)
+    # check to see if the API key exists
+    tinyurl_api_key = keyring.get_password("system", "tinyurl")
+    if tinyurl_api_key is None:
+        print('API key error: no TinyURL API key found in system keystore', file=sys.stderr)
         exit(1)
-
-    # load the API keys
-    tinyurl_api_key = ""
-
-    with open("api_keys.txt", "r") as api_keys:
-        for line in api_keys:
-            if "tinyurl:" in line:
-                try:
-                    tinyurl_api_key = line.strip().split()[1]
-                except IndexError:
-                    print('file error: TinyURL API key missing or formatted improperly', file=sys.stderr)
-                    exit(1)
-            else:
-                print('file error: no API keys identified', file=sys.stderr)
-                exit(1)
 
     url_to_shorten = input('Enter a URL to shorten:')
     change_to = input('Enter a new TinyURL ID to shorten to:')

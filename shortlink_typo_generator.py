@@ -1,58 +1,11 @@
 import argparse
 from http import HTTPStatus
-import os
+import keyring
 import sys
 from typo_list_generator import make_typos
 import bitly_shortlink_creator
 import tinyurl_shortlink_creator
 import validators
-
-def validate_api_file():
-    """
-    Check to see if the API keys file exists and is formatted properly
-    :return: boolean indicating the existence of the file
-    """
-    # check to see if the API keys file exists
-    if not os.path.isfile("api_keys.txt"):
-        print('file error: missing api_keys.txt', file=sys.stderr)
-        exit(1)
-
-    # load the API keys
-    api_keys = {}
-
-    #bitly_api_key = ""
-    #tinyurl_api_key = ""
-
-    with open("api_keys.txt", "r") as api_keys_file:
-        for line in api_keys_file:
-            # bitly api key in the file
-            if "bitly:" in line:
-                try:
-                    #bitly_api_key = line.strip().split()[1]
-                    api_keys["bitly"] = line.strip().split()[1]
-                    continue
-                except IndexError:
-                    print('file error: Bit.ly API key missing', file=sys.stderr)
-                    exit(1)
-
-            # tinyurl api key in the file
-            if "tinyurl:" in line:
-                try:
-                    api_keys["tinyurl"] = line.strip().split()[1]
-                    continue
-                except IndexError:
-                    print('file error: TinyUrl API key missing', file=sys.stderr)
-                    exit(1)
-
-            # something else in the file
-            else:
-                print('file error: no API keys identified', file=sys.stderr)
-                exit(1)
-
-    # return the api key
-    #return bitly_api_key, tinyurl_api_key
-    return api_keys
-
 
 def validate_bitly_id(bit_id):
     """
@@ -363,9 +316,9 @@ if __name__ == '__main__':
     print("############################")
     print("Generate and register common typos for your shortlinks! (bit.ly or tinyurl.com) | by Wyatt Tauber (wyatttauber.com)")
 
-    # read the API keys
-    #bitly_api_key, tinyurl_api_key = validate_api_file()
-    api_keys = validate_api_file()
+    # read the API keys from the system keystore
+    bitly_api_key = keyring.get_password("system", "bitly")
+    tinyurl_api_key = keyring.get_password("system", "tinyurl")
 
     # initialize values to be assigned
     shortlink = ""
@@ -400,9 +353,15 @@ if __name__ == '__main__':
     links = []
 
     if "bit.ly/" in shortlink:
-        links = create_bitly_typos(api_keys["bitly"], shortlink, redirect, options, debug, bypass)
+        if bitly_api_key is None:
+            print('API key error: no Bit.ly API key found in system keystore', file=sys.stderr)
+            exit(1)
+        links = create_bitly_typos(bitly_api_key, shortlink, redirect, options, debug, bypass)
     elif "tinyurl.com/" in shortlink:
-        links = create_tinyurl_typos(api_keys["tinyurl"], shortlink, redirect, options, debug, bypass)
+        if tinyurl_api_key is None:
+            print('API key error: no TinyURL API key found in system keystore', file=sys.stderr)
+            exit(1)
+        links = create_tinyurl_typos(tinyurl_api_key, shortlink, redirect, options, debug, bypass)
     else:
         print('shortlink error: shortlink provided is not a supported shortlink', file=sys.stderr)
         exit(1)
