@@ -39,6 +39,26 @@ key_list = {'a': ['q', 'w', 's', 'x', 'z'],
             '0': ['9', 'p', 'o'],
             }
 
+# mappings for common confuse characters
+confuses = {
+    '0': ['O'],
+    '1': ['I', 'l'],
+    '2': ['Z'],
+    '4': ['A'],
+    '5': ['S'],
+    '7': ['T'],
+    '8': ['B'],
+    'A': ['4'],
+    'B': ['8'],
+    'I': ['1', 'l'],
+    'L': ['1', 'I'],
+    'O': ['0'],
+    'S': ['5'],
+    'T': ['7'],
+    'Z': ['2'],
+    'l': ['1', 'I']
+}
+
 
 def skip_letter(keyword, list, debug):
     """
@@ -170,6 +190,29 @@ def change_case(keyword, list, debug):
         print("Case:", case_list)
     list += case_list
 
+def change_confuse(keyword, list, debug):
+    confuse_list = []
+
+    i = 0
+    j = 0
+
+    while i < len(keyword):
+        character = keyword[i]
+        try:
+            while j < len(confuses[character]):
+                confuse_character = confuses[character][j]
+                new_word = keyword[0:i] + confuse_character + keyword[i + 1:]
+                confuse_list.append(new_word)
+                j += 1
+        except KeyError:
+            pass
+        j = 0
+        i += 1
+
+    if debug:
+        print("conFuse:", confuse_list)
+    list += confuse_list
+
 def make_typos(string, options, debug):
     """
     Apply the typo operations
@@ -196,6 +239,8 @@ def make_typos(string, options, debug):
         miss_key(string, typo_list, debug)
     if options["case"]:
         change_case(string, typo_list, debug)
+    if options["confuse"]:
+        change_confuse(string, typo_list, debug)
 
     return typo_list
 
@@ -205,7 +250,8 @@ if __name__ == "__main__":
     original_string = input("Enter a string to create typos:")
 
     # get a list of generated typos
-    typos = make_typos(original_string, True)
+    options = {'skip': True, 'double': False, 'reverse': False, 'miss': True, 'case': True, 'confuse': True}
+    typos = make_typos(original_string, options, True)
 
     # print the typo list
     for typo in typos:

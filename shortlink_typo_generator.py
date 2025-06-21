@@ -107,6 +107,7 @@ def parse_arguments():
                         help="mistype each key to an adjacent key (e.g., bit.ly/example → bit.ly/wxample) (default)")
     parser.add_argument("-c", "--case", action="store_true",
                         help="change case of each letter (e.g., bit.ly/example → bit.ly/Example) (default)")
+    parser.add_argument("-f", "--confuse", action="store_true", help="change letter to common confusables (e.g., bit.ly/example0 → bit.ly/exampleO)")
     parser.add_argument("-A", "--all", action="store_true", help="generate all typos (not recommended on first run of a shortlink)")
 
     # optional output and interaction arguments
@@ -128,17 +129,19 @@ def parse_arguments():
         args.reverse = True
         args.miss = True
         args.case = True
+        args.confuse = True
 
-        print("Running via cmd | ALL typo generation options enabled: skip double reverse miss case\n")
+        print("Running via cmd | ALL typo generation options enabled: skip double reverse miss case confuse\n")
 
     elif not any([args.skip, args.double, args.reverse, args.miss, args.case]):
         # apply defaults if no options are explicitly passed
         args.skip = True
         args.miss = True
         args.case = True
+        args.confuse = True
 
         print("Running via cmd | Default typo generation options enabled:", end=" ")
-        for opt in ["skip", "double", "reverse", "miss", "case"]:
+        for opt in ["skip", "double", "reverse", "miss", "case", "confuse"]:
             if getattr(args, opt):
                 print(opt, end=" ")
         print("\n")
@@ -146,7 +149,7 @@ def parse_arguments():
     else:
         # print options that are enabled
         print("Running via cmd | Typo generation options enabled:", end=" ")
-        for opt in ["skip", "double", "reverse", "miss", "case"]:
+        for opt in ["skip", "double", "reverse", "miss", "case", "confuse"]:
             if getattr(args, opt):
                 print(opt, end=" ")
         print("\n")
@@ -160,11 +163,11 @@ def select_options():
     :return: a dictionary of options selected by the user
     """
     # options dictionary
-    options = {'skip': True, 'double': False, 'reverse': False, 'miss': True, 'case': True}
+    options = {'skip': True, 'double': False, 'reverse': False, 'miss': True, 'case': True, 'confuse': True}
 
     # explain the simple options to the user and perform selection
     print("Press ENTER to create the most common typos (default).")
-    print("Press c to customize typo generation (-sdrmc).")
+    print("Press c to customize typo generation (-sdrmcf).")
     print("Press a to create all possible typos (-A).")
 
     selection = input()
@@ -172,25 +175,27 @@ def select_options():
         print("Invalid selection. Please try again.")
         selection = input()
     if selection == "a":
-        options = {'skip': True, 'double': True, 'reverse': True, 'miss': True, 'case': True}
+        options = {'skip': True, 'double': True, 'reverse': True, 'miss': True, 'case': True, 'confuse': True}
     elif selection == "c":
-        options = {'skip': False, 'double': False, 'reverse': False, 'miss': False, 'case': False}
+        options = {'skip': False, 'double': False, 'reverse': False, 'miss': False, 'case': False, 'confuse': False}
 
         # explain the detailed options to the user and perform selection
         print("Select options for typo generation (y to confirm, any other key to skip):")
         print("! options are the default options, and therefore are strongly recommended.")
         print("Letter-based options:")
-        if input("\t! Skip each letter (-s)? (ex: bit.ly/example → bit.ly/xample): ") == 'y':
+        if input("\t! Skip each letter (-s)? (e.g., bit.ly/example → bit.ly/xample): ") == 'y':
             options['skip'] = True
-        if input("\t* Double each letter (-d)? (ex: bit.ly/example → bit.ly/eexample): ") == 'y':
+        if input("\t* Double each letter (-d)? (e.g., bit.ly/example → bit.ly/eexample): ") == 'y':
             options['double'] = True
-        if input("\t* Reverse each letter (-r)? (ex: bit.ly/example → bit.ly/xeample): ") == 'y':
+        if input("\t* Reverse each letter (-r)? (e.g., bit.ly/example → bit.ly/xeample): ") == 'y':
             options['reverse'] = True
         print("Key-based options:")
-        if input("\t! Mistype each key to an adjacent key (-m)? (ex: bit.ly/example → bit.ly/wxample): ") == 'y':
+        if input("\t! Mistype each key to an adjacent key (-m)? (e.g., bit.ly/example → bit.ly/wxample): ") == 'y':
             options['miss'] = True
-        if input("\t! Change case of letter (-c)? (ex: bit.ly/example → bit.ly/Example): ") == 'y':
+        if input("\t! Change case of letter (-c)? (e.g., bit.ly/example → bit.ly/Example): ") == 'y':
             options['case'] = True
+        if input("\t! Change letter to common confusables (-f)? (e.g., bit.ly/example0 → bit.ly/exampleO): ") == 'y':
+            options['confuse'] = True
 
         if options == {'skip': False, 'double': False, 'reverse': False, 'miss': False, 'case': False}:
             print("options error: no options selected", file=sys.stderr)
@@ -333,13 +338,13 @@ if __name__ == '__main__':
         # assign values
         shortlink = args.shortlink
         redirect = args.redirect_url
-        options = {'skip': args.skip, 'double': args.double, 'reverse': args.reverse, 'miss': args.miss, 'case': args.case}
+        options = {'skip': args.skip, 'double': args.double, 'reverse': args.reverse, 'miss': args.miss, 'case': args.case, 'confuse': args.confuse}
         bypass = args.BYPASS
         debug = args.preview
 
     else:
         # show command line usage
-        print("cmd usage: shortlink_typo_generator.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-A --all] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url\n")
+        print("cmd usage: shortlink_typo_generator.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-f --confuse] [-A --all] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url\n")
 
         # get the shortlink ID and redirect URL from the user
         shortlink = input('Enter a shortlink (bit.ly or tinyurl.com) to generate typos for: ').strip()

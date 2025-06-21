@@ -10,6 +10,7 @@ Generate and register common typos for your shortlinks.
   * Reversed letters
   * Missed keys
   * Changed case
+  * Confusable characters
 
 ## Requirements
 * Python 3
@@ -33,7 +34,7 @@ wyatt@wyatt-pc:~# ./shortlink-typo-generator.py
 # SHORTLINK TYPO GENERATOR #
 ############################
 Generate and register common typos for your shortlinks! | by Wyatt Tauber (wyatttauber.com)
-cmd usage: shortlink-typo-generator.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-A --all] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url
+cmd usage: shortlink-typo-generator.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-f --confuse] [-A --all] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url
 
 Enter a shortlink (bit.ly or tinyurl.com) to generate typos for: bit.ly/example
 Enter a URL to redirect the typos to: https://example.com/
@@ -46,13 +47,14 @@ Do you want to preview the typos to be generated before generating them (good id
 Skip: ['xample', 'eample', 'exmple', 'exaple', 'examle', 'exampe', 'exampl']
 Miss: ['wxample', '3xample', '4xample', 'rxample', 'fxample', 'dxample', 'sxample', ...]
 Case: ['Example', 'eXample', 'exAmple', 'exaMple', 'examPle', 'exampLe', 'examplE']
-This will use 46 API calls. Press ENTER to confirm or any other key to exit... (-B to bypass this warning in cmd) 
+conFuse: ['examp1e', 'exampIe']
+This will use 48 API calls. Press ENTER to confirm or any other key to exit... (-B to bypass this warning in cmd) 
 
-Attempting to create 46 bit.ly typos...
+Attempting to create 48 bit.ly typos...
 Creating bit.ly/xample
 ...
 
-Generated 42 bit.ly typos that redirect to https://example.com/
+Generated 44 bit.ly typos that redirect to https://example.com/
 https://bit.ly/xample
 ...
 ```
@@ -64,15 +66,14 @@ wyatt@wyatt-pc:~# ./shortlink-typo-generator.py tinyurl.com/example https://exam
 # SHORTLINK TYPO GENERATOR #
 ############################
 Generate and register common typos for your shortlinks! | by Wyatt Tauber (wyatttauber.com)
-Running via cmd | Default typo generation options enabled: skip miss case 
+Running via cmd | Default typo generation options enabled: skip miss case confuse 
 
-Attempting to create 46 tinyurl.com typos...
-fail: error 422 creating new short link tinyurl.com/xample from generated link tinyurl.com/bdz7zr7d for https://example.com/ due to Alias is not available.
-Creating tinyurl.com/eample
+Attempting to create 48 tinyurl.com typos...
+Creating tinyurl.com/xample
 ...
 
-Created 24 tinyurl.com typos that redirect to https://example.com
-https://tinyurl.com/eample
+Created 44 tinyurl.com typos that redirect to https://example.com
+https://tinyurl.com/xample
 ...
 ```
 
