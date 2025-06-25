@@ -1,46 +1,125 @@
 import sys
 
 # adjacent key mappings for the missed key and inserted key functions
-key_list = {'a': ['q', 'w', 's', 'x', 'z'],
-            'b': ['v', 'g', 'h', 'n'],
-            'c': ['x', 'd', 'f', 'v'],
-            'd': ['s', 'e', 'r', 'f', 'c', 'x'],
-            'e': ['w', '3', '4', 'r', 'f', 'd', 's'],
-            'f': ['d', 'r', 't', 'g', 'v', 'c'],
-            'g': ['f', 't', 'y', 'h', 'b', 'v'],
-            'h': ['g', 'y', 'u', 'j', 'n', 'b'],
-            'i': ['u', '8', '9', 'o', 'l', 'k', 'j'],
-            'j': ['h', 'u', 'i', 'k', 'm', 'n'],
-            'k': ['j', 'i', 'o', 'l', 'm'],
-            'l': ['k', 'o', 'p'],
-            'm': ['n', 'j', 'k'],
-            'n': ['b', 'h', 'j', 'm'],
-            'o': ['i', '9', '0', 'p', 'l', 'k'],
-            'p': ['o', '0', 'l'],
-            'q': ['1', '2', 'w', 's', 'a'],
-            'r': ['e', '4', '5', 't', 'g', 'f', 'd'],
-            's': ['a', 'w', 'e', 'd', 'x', 'z'],
-            't': ['r', '5', '6', 'y', 'h', 'g', 'f'],
-            'u': ['y', '7', '8', 'i', 'k', 'j', 'h'],
-            'v': ['c', 'f', 'g', 'b'],
-            'w': ['q', '2', '3', 'e', 'd', 's', 'a'],
-            'x': ['z', 's', 'd', 'c'],
-            'y': ['t', '6', '7', 'u', 'j', 'h', 'g'],
-            'z': ['a', 's', 'x'],
-            '1': ['2', 'q'],
-            '2': ['1', '3', 'w', 'q'],
-            '3': ['2', '4', 'e', 'w'],
-            '4': ['3', '5', 'r', 'e'],
-            '5': ['4', '6', 't', 'r'],
-            '6': ['5', '7', 'y', 't'],
-            '7': ['6', '8', 'u', 'y'],
-            '8': ['7', '9', 'i', 'u'],
-            '9': ['8', '0', 'o', 'i'],
-            '0': ['9', 'p', 'o'],
-            }
+adjacencies = {
+    'QWERTY': {
+        'a': ['q', 'w', 's', 'x', 'z'],
+        'b': ['v', 'g', 'h', 'n'],
+        'c': ['x', 'd', 'f', 'v'],
+        'd': ['s', 'e', 'r', 'f', 'c', 'x'],
+        'e': ['w', '3', '4', 'r', 'f', 'd', 's'],
+        'f': ['d', 'r', 't', 'g', 'v', 'c'],
+        'g': ['f', 't', 'y', 'h', 'b', 'v'],
+        'h': ['g', 'y', 'u', 'j', 'n', 'b'],
+        'i': ['u', '8', '9', 'o', 'l', 'k', 'j'],
+        'j': ['h', 'u', 'i', 'k', 'm', 'n'],
+        'k': ['j', 'i', 'o', 'l', 'm'],
+        'l': ['k', 'o', 'p'],
+        'm': ['n', 'j', 'k'],
+        'n': ['b', 'h', 'j', 'm'],
+        'o': ['i', '9', '0', 'p', 'l', 'k'],
+        'p': ['o', '0', 'l'],
+        'q': ['1', '2', 'w', 's', 'a'],
+        'r': ['e', '4', '5', 't', 'g', 'f', 'd'],
+        's': ['a', 'w', 'e', 'd', 'x', 'z'],
+        't': ['r', '5', '6', 'y', 'h', 'g', 'f'],
+        'u': ['y', '7', '8', 'i', 'k', 'j', 'h'],
+        'v': ['c', 'f', 'g', 'b'],
+        'w': ['q', '2', '3', 'e', 'd', 's', 'a'],
+        'x': ['z', 's', 'd', 'c'],
+        'y': ['t', '6', '7', 'u', 'j', 'h', 'g'],
+        'z': ['a', 's', 'x'],
+        '1': ['2', 'q'],
+        '2': ['1', '3', 'w', 'q'],
+        '3': ['2', '4', 'e', 'w'],
+        '4': ['3', '5', 'r', 'e'],
+        '5': ['4', '6', 't', 'r'],
+        '6': ['5', '7', 'y', 't'],
+        '7': ['6', '8', 'u', 'y'],
+        '8': ['7', '9', 'i', 'u'],
+        '9': ['8', '0', 'o', 'i'],
+        '0': ['9', 'p', 'o'],
+        },
+    'QWERTZ': {
+        'a': ['q', 'w', 's', 'y', 'z'],
+        'b': ['v', 'g', 'h', 'n'],
+        'c': ['x', 'd', 'f', 'v'],
+        'd': ['s', 'e', 'r', 'f', 'c', 'x'],
+        'e': ['w', '3', '4', 'r', 'f', 'd', 's'],
+        'f': ['d', 'r', 't', 'g', 'v', 'c'],
+        'g': ['f', 't', 'z', 'h', 'b', 'v'],
+        'h': ['g', 'z', 'u', 'j', 'n', 'b'],
+        'i': ['u', '8', '9', 'o', 'l', 'k', 'j'],
+        'j': ['h', 'u', 'i', 'k', 'm', 'n'],
+        'k': ['j', 'i', 'o', 'l', 'm'],
+        'l': ['k', 'o', 'p'],
+        'm': ['n', 'j', 'k'],
+        'n': ['b', 'h', 'j', 'm'],
+        'o': ['i', '9', '0', 'p', 'l', 'k'],
+        'p': ['o', '0', 'l'],
+        'q': ['1', '2', 'w', 'a'],
+        'r': ['e', '4', '5', 't', 'g', 'f', 'd'],
+        's': ['a', 'w', 'e', 'd', 'x', 'y'],
+        't': ['r', '5', '6', 'z', 'h', 'g', 'f'],
+        'u': ['z', '7', '8', 'i', 'k', 'j', 'h'],
+        'v': ['c', 'f', 'g', 'b'],
+        'w': ['q', '2', '3', 'e', 'd', 's', 'a'],
+        'x': ['y', 's', 'd', 'c'],
+        'y': ['t', '6', '7', 'u', 'j', 'h', 'g'],
+        'z': ['t', 'g', 'h', 'u', 'j'],
+        '1': ['2', 'q'],
+        '2': ['1', '3', 'w', 'q'],
+        '3': ['2', '4', 'e', 'w'],
+        '4': ['3', '5', 'r', 'e'],
+        '5': ['4', '6', 't', 'r'],
+        '6': ['5', '7', 'z', 't'],
+        '7': ['6', '8', 'u', 'z'],
+        '8': ['7', '9', 'i', 'u'],
+        '9': ['8', '0', 'o', 'i'],
+        '0': ['9', 'p', 'o'],
+        },
+    'AZERTY': {
+        'a': ['z', 'q', 's'],
+        'z': ['a', 'e', 's'],
+        'e': ['z', 'r', 'd', '3', '4'],
+        'r': ['e', 't', 'f', '4', '5'],
+        't': ['r', 'y', 'g', '5', '6'],
+        'y': ['t', 'u', 'h', '6', '7'],
+        'u': ['y', 'i', 'j', '7', '8'],
+        'i': ['u', 'o', 'k', '8', '9'],
+        'o': ['i', 'p', 'l', '9', '0'],
+        'p': ['o', 'm', '0'],
+        'q': ['a', 's', 'w', '1', '2'],
+        's': ['q', 'd', 'z', 'a', 'w', '2', '3'],
+        'd': ['s', 'f', 'e', 'x', '3', '4'],
+        'f': ['d', 'g', 'r', 'c', '4', '5'],
+        'g': ['f', 'h', 't', 'v', '5', '6'],
+        'h': ['g', 'j', 'y', 'b', '6', '7'],
+        'j': ['h', 'k', 'u', 'n', '7', '8'],
+        'k': ['j', 'l', 'i', '8', '9'],
+        'l': ['k', 'm', 'o', '9', '0'],
+        'm': ['l', 'p', '0'],
+        'w': ['q', 'x', 's'],
+        'x': ['w', 'd', 'c', 's'],
+        'c': ['x', 'f', 'v'],
+        'v': ['c', 'g', 'b'],
+        'b': ['v', 'h', 'n'],
+        'n': ['b', 'j', 'm'],
+        '1': ['2', 'q'],
+        '2': ['1', '3', 'w', 'q', 's'],
+        '3': ['2', '4', 'e', 'w', 's', 'd'],
+        '4': ['3', '5', 'r', 'e', 'd', 'f'],
+        '5': ['4', '6', 't', 'r', 'f', 'g'],
+        '6': ['5', '7', 'y', 't', 'g', 'h'],
+        '7': ['6', '8', 'u', 'y', 'h', 'j'],
+        '8': ['7', '9', 'i', 'u', 'j', 'k'],
+        '9': ['8', '0', 'o', 'i', 'k', 'l'],
+        '0': ['9', 'p', 'o', 'l', 'm'],
+        }
+}
 
-# mappings for common confuse characters
-confuses = {
+# mappings for common confusable characters
+confusables = {
     '0': ['O'],
     '1': ['I', 'l'],
     '2': ['Z'],
@@ -59,12 +138,12 @@ confuses = {
     'l': ['1', 'I']
 }
 
-
 def skip_letter(keyword, list, debug):
     """
     Generates all keywords with a letter skipped
     :param keyword: a keyword to generate typos for
     :param list: the list of typos to append to
+    :param debug: a boolean indicating whether to preview the typos before generating them
     """
     skip_list = []
 
@@ -85,6 +164,7 @@ def double_letter(keyword, list, debug):
     Generates all keywords with a letter duplicated
     :param keyword: a keyword to generate typos for
     :param list: the list of typos to append to
+    :param debug: a boolean indicating whether to preview the typos before generating them
     """
     double_list = []
 
@@ -105,6 +185,7 @@ def reverse_letters(keyword, list, debug):
     Generates all keywords with a letter reversed
     :param keyword: a keyword to generate typos for
     :param list: the list of typos to append to
+    :param debug: a boolean indicating whether to preview the typos before generating them
     """
     reverse_list = []
 
@@ -120,11 +201,13 @@ def reverse_letters(keyword, list, debug):
         print("Reverse:", reverse_list)
     list += reverse_list
 
-def miss_key(keyword, list, debug):
+def miss_key(keyword, list, debug, layout):
     """
     Generate all keywords with a missed key (assume only one missed key per generated word)
     :param keyword: a keyword to generate typos for
     :param list: the list of typos to append to
+    :param debug: a boolean indicating whether to preview the typos before generating them
+    :param layout: the keyboard layout to use for the missed keys generator
     """
     miss_list = []
 
@@ -140,13 +223,13 @@ def miss_key(keyword, list, debug):
         else:
             character = keyword[i]
 
-        while j < len(key_list[character]):
+        while j < len(adjacencies[layout][character]):
             if capital:
                 # if the letter is capital, make the mapping capital as well
-                replacement_key = key_list[character][j].upper()
+                replacement_key = adjacencies[layout][character][j].upper()
             else:
                 # if the letter is not capital, do not change the case of the letter
-                replacement_key = key_list[character][j]
+                replacement_key = adjacencies[layout][character][j]
 
             # miss a letter
             new_word = keyword[0:i] + replacement_key + keyword[i + 1:]
@@ -159,7 +242,7 @@ def miss_key(keyword, list, debug):
         capital = False
 
     if debug:
-        print("Miss:", miss_list)
+        print("Miss (" + layout + "):", miss_list)
     list += miss_list
 
 def change_case(keyword, list, debug):
@@ -167,6 +250,7 @@ def change_case(keyword, list, debug):
     Generate all keywords with a letter changed case
     :param keyword: a keyword to generate typos for
     :param list: the list of typos to append to
+    :param debug: a boolean indicating whether to preview the typos before generating them
     """
     case_list = []
 
@@ -191,6 +275,12 @@ def change_case(keyword, list, debug):
     list += case_list
 
 def change_confuse(keyword, list, debug):
+    """
+    Generate all keywords with confusable letters changed
+    :param keyword: a keyword to generate typos for
+    :param list: the list of typos to append to
+    :param debug: a boolean indicating whether to preview the typos before generating them
+    """
     confuse_list = []
 
     i = 0
@@ -199,8 +289,8 @@ def change_confuse(keyword, list, debug):
     while i < len(keyword):
         character = keyword[i]
         try:
-            while j < len(confuses[character]):
-                confuse_character = confuses[character][j]
+            while j < len(confusables[character]):
+                confuse_character = confusables[character][j]
                 new_word = keyword[0:i] + confuse_character + keyword[i + 1:]
                 confuse_list.append(new_word)
                 j += 1
@@ -213,10 +303,13 @@ def change_confuse(keyword, list, debug):
         print("conFuse:", confuse_list)
     list += confuse_list
 
-def make_typos(string, options, debug):
+def make_typos(string, options, debug, layout):
     """
     Apply the typo operations
     :param string: a string to generate typos with
+    :param options: a dictionary of options selected by the user
+    :param debug: a boolean indicating whether to preview the typos before generating them
+    :param layout: the keyboard layout to use for the missed keys generator
     :param options: a dictionary of options for which typos to generate
     """
     # check if the string is alphanumeric, exiting if not
@@ -236,7 +329,7 @@ def make_typos(string, options, debug):
     if options["reverse"]:
         reverse_letters(string, typo_list, debug)
     if options["miss"]:
-        miss_key(string, typo_list, debug)
+        miss_key(string, typo_list, debug, layout)
     if options["case"]:
         change_case(string, typo_list, debug)
     if options["confuse"]:
@@ -251,7 +344,7 @@ if __name__ == "__main__":
 
     # get a list of generated typos
     options = {'skip': True, 'double': False, 'reverse': False, 'miss': True, 'case': True, 'confuse': True}
-    typos = make_typos(original_string, options, True)
+    typos = make_typos(original_string, options, True, 'qwerty')
 
     # print the typo list
     for typo in typos:

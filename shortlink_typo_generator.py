@@ -111,11 +111,16 @@ def parse_arguments():
     parser.add_argument("-A", "--all", action="store_true", help="generate all typos (not recommended on first run of a shortlink)")
 
     # optional output and interaction arguments
+    parser.add_argument("-k", "--keyboard", metavar="LAYOUT", type=str, nargs="?", const="QWERTY", help="keyboard layout for the missed keys generator (QWERTY (default), QWERTZ, AZERTY)")
     parser.add_argument("-P", "--preview", action="store_true", help="preview the typos to be generated before generating them (good idea on first run of a shortlink)")
     parser.add_argument("-B", "--BYPASS", action="store_true",
                         help="bypass the API call confirmation prompt (not recommended on first run of a shortlink)")
 
     args = parser.parse_args()
+
+    # set the keyboard type to QWERTY (default) if all is selected but no keyboard layout is specified
+    if not args.keyboard and args.all:
+        args.keyboard = "QWERTY"
 
     # don't allow preview and bypass at the same time as it's probably dumb
     if args.preview and args.BYPASS:
@@ -131,7 +136,7 @@ def parse_arguments():
         args.case = True
         args.confuse = True
 
-        print("Running via cmd | ALL typo generation options enabled: skip double reverse miss case confuse\n")
+        print("Running via cmd | ALL typo generation options enabled: skip double reverse miss case confuse", end=" ")
 
     elif not any([args.skip, args.double, args.reverse, args.miss, args.case]):
         # apply defaults if no options are explicitly passed
@@ -144,7 +149,6 @@ def parse_arguments():
         for opt in ["skip", "double", "reverse", "miss", "case", "confuse"]:
             if getattr(args, opt):
                 print(opt, end=" ")
-        print("\n")
 
     else:
         # print options that are enabled
@@ -152,7 +156,12 @@ def parse_arguments():
         for opt in ["skip", "double", "reverse", "miss", "case", "confuse"]:
             if getattr(args, opt):
                 print(opt, end=" ")
-        print("\n")
+
+    if args.keyboard:
+        print("| Keyboard layout:", args.keyboard.upper(), end=" ")
+    else:
+        print("| Keyboard layout: QWERTY", end=" ")
+    print("\n")
 
     return args
 
@@ -201,13 +210,21 @@ def select_options():
             print("options error: no options selected", file=sys.stderr)
             exit(1)
 
+    if options["miss"]:
+        layout = input("Missed keys generator enabled. Select your keyboard layout (QWERTY, QWERTZ, AZERTY). Leave blank for QWERTY (default):")
+        while layout.upper() != "QWERTY" and layout.upper() != "QWERTZ" and layout.upper() != "AZERTY" and layout.upper() != "":
+            layout = input("Invalid layout. Please try again:")
+        if layout.upper() == "":
+            layout = "QWERTY"
+    print()
+
     preview = False
     preview_input = input("Do you want to preview the typos to be generated before generating them (good idea on first run of a shortlink) (-P)? (y) ")
     if preview_input == "y":
         preview = True
 
     # return the selected options
-    return preview, options
+    return preview, options, layout
 
 
 def append_shortlink_domain(typo_list, domain):
@@ -226,7 +243,7 @@ def append_shortlink_domain(typo_list, domain):
     return url_list
 
 
-def create_bitly_typos(key, bitly_link, redirect_url, options, debug, bypass):
+def create_bitly_typos(key, bitly_link, redirect_url, options, debug, bypass, layout):
     """
     Create a list of typos for a bit.ly link and register them with a URL
     :param key: a bit.ly API key
@@ -235,6 +252,7 @@ def create_bitly_typos(key, bitly_link, redirect_url, options, debug, bypass):
     :param options: a dictionary of options selected by the user
     :param debug: a boolean indicating whether to preview the typos before generating them
     :param bypass: a boolean indicating whether to bypass the API call confirmation prompt
+    :param layout: the keyboard layout to use for the missed keys generator
     :return: a list of successfully-created bit.ly hyperlinks
     """
     # validate the api key, the long URL, and the bit.ly ID short link URL
@@ -245,7 +263,7 @@ def create_bitly_typos(key, bitly_link, redirect_url, options, debug, bypass):
 
     # create a list of bit.ly ID typos
     path = bitly_link.split('/')[1]
-    typos = make_typos(path, options, debug)
+    typos = make_typos(path, options, debug, layout)
     bitly_typos = append_shortlink_domain(typos, "bit.ly")
 
     # confirm the number of typos to generate with the user if not bypassed
@@ -270,7 +288,7 @@ def create_bitly_typos(key, bitly_link, redirect_url, options, debug, bypass):
     return success_list
 
 
-def create_tinyurl_typos(key, tinyurl_link, redirect_url, options, debug, bypass):
+def create_tinyurl_typos(key, tinyurl_link, redirect_url, options, debug, bypass, layout):
     """
     Create a list of typos for a tinyurl link and register them with a URL
     :param key: a tinyurl API key
@@ -279,6 +297,7 @@ def create_tinyurl_typos(key, tinyurl_link, redirect_url, options, debug, bypass
     :param options: a dictionary of options selected by the user
     :param debug: a boolean indicating whether to preview the typos before generating them
     :param bypass: a boolean indicating whether to bypass the API call confirmation prompt
+    :param layout: the keyboard layout to use for the missed keys generator
     :return: a list of successfully-created tinyurl hyperlinks
     """
     # validate the api key, the long URL, and the TinyURL ID short link URL
@@ -289,7 +308,7 @@ def create_tinyurl_typos(key, tinyurl_link, redirect_url, options, debug, bypass
 
     # create a list of tinyurl ID typos
     path = tinyurl_link.split('/')[1]
-    typos = make_typos(path, options, debug)
+    typos = make_typos(path, options, debug, layout)
     tinyurl_typos = append_shortlink_domain(typos, "tinyurl.com")
 
     # confirm the number of typos to generate with the user if not bypassed
@@ -331,6 +350,7 @@ if __name__ == '__main__':
     options = {}
     bypass = False
     debug = False
+    layout = "QWERTY"
 
     if len(sys.argv) > 1:
         args = parse_arguments()
@@ -341,10 +361,11 @@ if __name__ == '__main__':
         options = {'skip': args.skip, 'double': args.double, 'reverse': args.reverse, 'miss': args.miss, 'case': args.case, 'confuse': args.confuse}
         bypass = args.BYPASS
         debug = args.preview
+        layout = args.keyboard
 
     else:
         # show command line usage
-        print("cmd usage: shortlink_typo_generator.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-f --confuse] [-A --all] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url\n")
+        print("cmd usage: shortlink_typo_generator.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-f --confuse] [-A --all] [-k --keyboard [QWERTY | QWERTZ | AZERTY]] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url\n")
 
         # get the shortlink ID and redirect URL from the user
         shortlink = input('Enter a shortlink (bit.ly or tinyurl.com) to generate typos for: ').strip()
@@ -352,7 +373,7 @@ if __name__ == '__main__':
         print()
 
         # select which typos to generate
-        debug, options = select_options()
+        debug, options, layout = select_options()
 
     # create the links
     links = []
@@ -361,12 +382,12 @@ if __name__ == '__main__':
         if bitly_api_key is None:
             print('API key error: no Bit.ly API key found in system keystore', file=sys.stderr)
             exit(1)
-        links = create_bitly_typos(bitly_api_key, shortlink, redirect, options, debug, bypass)
+        links = create_bitly_typos(bitly_api_key, shortlink, redirect, options, debug, bypass, layout)
     elif "tinyurl.com/" in shortlink:
         if tinyurl_api_key is None:
             print('API key error: no TinyURL API key found in system keystore', file=sys.stderr)
             exit(1)
-        links = create_tinyurl_typos(tinyurl_api_key, shortlink, redirect, options, debug, bypass)
+        links = create_tinyurl_typos(tinyurl_api_key, shortlink, redirect, options, debug, bypass, layout)
     else:
         print('shortlink error: shortlink provided is not a supported shortlink', file=sys.stderr)
         exit(1)
