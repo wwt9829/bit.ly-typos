@@ -1,11 +1,11 @@
 import pytest
 
-from bitly_shortlink_creator import *
+from tinyurl_shortlink_creator import *
 from random import randint
 
-bitly_api_key = keyring.get_password("system", "bitly")
+tinyurl_api_key = keyring.get_password("system", "tinyurl")
 headers = {
-    'Authorization': 'Bearer {}'.format(bitly_api_key),
+    'Authorization': 'Bearer {}'.format(tinyurl_api_key),
     'Content-Type': 'application/json',
 }
 short_url = None
@@ -13,7 +13,7 @@ prn = randint(100000, 999999)
 
 @pytest.fixture
 def var_create_link():
-    response, short_url = create_link(headers, "https://example.com")
+    response, short_url = create_link(headers, "https://example.com", tinyurl_api_key)
 
     return response, short_url
 
@@ -23,15 +23,15 @@ def test_create_link(var_create_link):
 
 def test_update_custom(var_create_link):
     old_short_url = urlparse(var_create_link[1])
-    old_bitly_id = old_short_url.netloc + old_short_url.path
-    response = update_custom(headers, old_bitly_id, "bit.ly/example" + str(prn))
+    old_tinyurl_id = old_short_url.path.strip("/")
+    response = update_custom(headers, old_tinyurl_id, "tinyurl.com/example" + str(prn), tinyurl_api_key)
 
     assert response.status_code == HTTPStatus.OK
 
 def test_create_short_url():
-    result = create_short_url(bitly_api_key, "https://example.com", "bit.ly/example" + str(prn))
+    result = create_short_url(tinyurl_api_key, "https://example.com", "tinyurl.com/example" + str(prn))
     result_content = json.loads(result.content.decode('utf-8'))
     message = result_content.get('message')
 
     # will fail because already exists
-    assert result.status_code == HTTPStatus.BAD_REQUEST
+    assert result.status_code == HTTPStatus.UNPROCESSABLE_ENTITY

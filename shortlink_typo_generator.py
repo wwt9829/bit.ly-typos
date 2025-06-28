@@ -322,9 +322,9 @@ def create_tinyurl_typos(key, tinyurl_link, redirect_url, options, debug, bypass
     print('NOTE: TinyURL WILL report an error if you re-register a shortlink you already own.')
     for tinyurl_typo in tinyurl_typos:
         print('Creating', tinyurl_typo)
-        result = tinyurl_shortlink_creator.create_short_url(key, redirect_url, tinyurl_typo)  # TODO
+        result = tinyurl_shortlink_creator.create_short_url(key, redirect_url, tinyurl_typo)
 
-        # add successful domains to a list  # TODO
+        # add successful domains to a list
         if result.status_code == HTTPStatus.OK:
             new_link = 'https://' + tinyurl_typo
             success_list.append(new_link)
