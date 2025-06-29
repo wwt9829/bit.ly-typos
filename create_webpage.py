@@ -143,4 +143,4 @@ if __name__ == "__main__":
         html_template = f.read()
 
     # replace placeholders in the HTML template with information derived from the shortlink URL
-    process_html_with_shortlink(html_template, "https://bit.ly/xeample")
+    process_html_with_shortlink(html_template, "https://tinyurl.com/csc842example")
