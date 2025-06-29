@@ -133,8 +133,8 @@ def process_html_with_shortlink(html, shortlink_url):
     with open("web/" + filename, "w", encoding="utf-8") as f:
         f.write(updated_html)
 
-    # print success (errors will be printed above if applicable)
-    print("HTML saved as:", filename)
+    # return the filename
+    return filename
 
 
 if __name__ == "__main__":

@@ -1,13 +1,18 @@
 import argparse
+from dataclasses import field
 from http import HTTPStatus
 import keyring
 import sys
-from typo_list_generator import make_typos
-from urllib.parse import urlparse
-import bitly_shortlink_creator
-import tinyurl_shortlink_creator
 import tldextract
 import validators
+#from urllib.parse import urlparse
+from urllib import parse
+
+from create_webpage import process_html_with_shortlink
+from typo_list_generator import make_typos
+import bitly_shortlink_creator
+import tinyurl_shortlink_creator
+
 
 def validate_bitly_id(bit_id):
     """
@@ -15,7 +20,7 @@ def validate_bitly_id(bit_id):
     :param bit_id: the bit.ly ID to be evaluated
     :return: ID validity, as a boolean
     """
-    bit_id = urlparse(bit_id)
+    bit_id = parse.urlparse(bit_id)
     bit_id = bit_id.netloc + bit_id.path
 
     # must have a /
@@ -39,7 +44,7 @@ def validate_tinyurl_id(tiny_id):
     :param tiny_id: the TinyURL ID to be evaluated
     :return: ID validity, as a boolean
     """
-    tiny_id = urlparse(tiny_id)
+    tiny_id = parse.urlparse(tiny_id)
     tiny_id = tiny_id.netloc + tiny_id.path
 
     # must have a /
@@ -264,7 +269,7 @@ def create_bitly_typos(key, bitly_link, redirect_url, options, debug, bypass, la
     :return: a list of successfully-created bit.ly hyperlinks
     """
     # validate the api key, the long URL, and the bit.ly ID short link URL
-    bitly_link = urlparse(bitly_link)
+    bitly_link = parse.urlparse(bitly_link)
     bitly_link = bitly_link.netloc + bitly_link.path
     if not validate_bitly(key, redirect_url, bitly_link):
         exit(1)
@@ -312,7 +317,7 @@ def create_tinyurl_typos(key, tinyurl_link, redirect_url, options, debug, bypass
     :return: a list of successfully-created tinyurl hyperlinks
     """
     # validate the api key, the long URL, and the TinyURL ID short link URL
-    tinyurl_link = urlparse(tinyurl_link)
+    tinyurl_link = parse.urlparse(tinyurl_link)
     tinyurl_link = tinyurl_link.netloc + tinyurl_link.path
     if not validate_tinyurl(key, redirect_url, tinyurl_link):
         exit(1)
@@ -349,9 +354,10 @@ def create_tinyurl_typos(key, tinyurl_link, redirect_url, options, debug, bypass
 
 if __name__ == '__main__':
     # print the welcome message
-    print("############################")
-    print("# SHORTLINK TYPO GENERATOR #")
-    print("############################")
+    print("#############################")
+    print("# SHORTLINK TYPO GENERATOR  #")
+    print("# (wyatttauber.com version) #")
+    print("#############################")
     print("Generate and register common typos for your shortlinks! (bit.ly or tinyurl.com) | by Wyatt Tauber (wyatttauber.com)")
 
     # read the API keys from the system keystore
@@ -383,7 +389,7 @@ if __name__ == '__main__':
 
         # get the shortlink ID and redirect URL from the user
         shortlink = input('Enter a shortlink (bit.ly or tinyurl.com) to generate typos for: ').strip()
-        redirect = input('Enter a URL to redirect the typos to: ').strip()
+        #redirect = input('Enter a URL to redirect the typos to: ').strip()
         print()
 
         # select which typos to generate
@@ -391,6 +397,16 @@ if __name__ == '__main__':
         if options == {'skip': False, 'double': False, 'reverse': False, 'miss': False, 'case': False, 'confuse': False}:
             print("options error: no options selected", file=sys.stderr)
             exit(1)
+
+    # read the HTML template from the file
+    with open("web/index.html", "r", encoding="utf-8") as f:
+        html_template = f.read()
+
+    # generate the redirector webpage
+    filename = process_html_with_shortlink(html_template, shortlink)
+    print("\nHTML saved as:", filename)
+    redirect = "https://wyatttauber.com/typos/" + parse.quote(filename)
+    print("URL to redirect the typos to:", redirect, "\n")
 
     # create the links
     links = []
