@@ -1,7 +1,6 @@
 import pytest
-
-from tinyurl_shortlink_creator import *
 from random import randint
+from tinyurl_shortlink_creator import *
 
 tinyurl_api_key = keyring.get_password("system", "tinyurl")
 headers = {
@@ -31,7 +30,6 @@ def test_update_custom(var_create_link):
 def test_create_short_url():
     result = create_short_url(tinyurl_api_key, "https://example.com", "tinyurl.com/example" + str(prn))
     result_content = json.loads(result.content.decode('utf-8'))
-    message = result_content.get('message')
 
     # will fail because already exists
     assert result.status_code == HTTPStatus.UNPROCESSABLE_ENTITY

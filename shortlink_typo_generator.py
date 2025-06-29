@@ -3,8 +3,10 @@ from http import HTTPStatus
 import keyring
 import sys
 from typo_list_generator import make_typos
+from urllib.parse import urlparse
 import bitly_shortlink_creator
 import tinyurl_shortlink_creator
+import tldextract
 import validators
 
 def validate_bitly_id(bit_id):
@@ -13,6 +15,9 @@ def validate_bitly_id(bit_id):
     :param bit_id: the bit.ly ID to be evaluated
     :return: ID validity, as a boolean
     """
+    bit_id = urlparse(bit_id)
+    bit_id = bit_id.netloc + bit_id.path
+
     # must have a /
     if '/' not in bit_id:
         return False
@@ -34,6 +39,9 @@ def validate_tinyurl_id(tiny_id):
     :param tiny_id: the TinyURL ID to be evaluated
     :return: ID validity, as a boolean
     """
+    tiny_id = urlparse(tiny_id)
+    tiny_id = tiny_id.netloc + tiny_id.path
+
     # must have a /
     if '/' not in tiny_id:
         return False
@@ -56,16 +64,17 @@ def validate_bitly(k, l, s):
     :param l: a URL
     :param s: a bit.ly ID
     """
-    if not k.isalnum() or not k.islower() or not len(k) == 40:
-        print('URL error: invalid API key', file=sys.stderr)
-        exit(1)
-    if not validators.url(l):
-        print('URL error: invalid URL (include full path)', file=sys.stderr)
-        exit(1)
+    if not k.isalnum() or not k.islower() or not any(c.isalpha() for c in k) or not any(c.isdigit() for c in k) or not len(k) == 40:
+        print('API error: invalid API key', file=sys.stderr)
+        return False
+    if not validators.url(l) or not tldextract.extract(l).suffix:
+        print('URL error: invalid URL', file=sys.stderr)
+        return False
     if not validate_bitly_id(s):
         print('shortlink error: invalid bit.ly ID', file=sys.stderr)
-        exit(1)
+        return False
 
+    return True
 
 def validate_tinyurl(k, l, s):
     """
@@ -74,16 +83,17 @@ def validate_tinyurl(k, l, s):
     :param l: a URL
     :param s: a bit.ly ID
     """
-    if not k.isalnum() or not len(k) == 60:
-        print('URL error: invalid API key', file=sys.stderr)
-        exit(1)
-    if not validators.url(l):
-        print('URL error: invalid URL (include full path)', file=sys.stderr)
-        exit(1)
+    if not k.isalnum() or not any(c.islower() for c in k) or not any(c.isupper() for c in k) or not any(c.isdigit() for c in k) or not len(k) == 60:
+        print('API error: invalid API key', file=sys.stderr)
+        return False
+    if not validators.url(l) or not tldextract.extract(l).suffix:
+        print('URL error: invalid URL', file=sys.stderr)
+        return False
     if not validate_tinyurl_id(s):
         print('shortlink error: invalid TinyURL ID', file=sys.stderr)
-        exit(1)
+        return False
 
+    return True
 
 def parse_arguments():
     """
@@ -206,15 +216,13 @@ def select_options():
         if input("\t! Change letter to common confusables (-f)? (e.g., bit.ly/example0 → bit.ly/exampleO): ") == 'y':
             options['confuse'] = True
 
-        if options == {'skip': False, 'double': False, 'reverse': False, 'miss': False, 'case': False}:
-            print("options error: no options selected", file=sys.stderr)
-            exit(1)
-
+    layout = "QWERTY"
     if options["miss"]:
-        layout = input("Missed keys generator enabled. Select your keyboard layout (QWERTY, QWERTZ, AZERTY). Leave blank for QWERTY (default):")
-        while layout.upper() != "QWERTY" and layout.upper() != "QWERTZ" and layout.upper() != "AZERTY" and layout.upper() != "":
-            layout = input("Invalid layout. Please try again:")
-        if layout.upper() == "":
+        layout = input("Missed keys generator enabled. Select your keyboard layout (QWERTY, QWERTZ, AZERTY). Leave blank for QWERTY (default):").upper()
+        while layout != "QWERTY" and layout != "QWERTZ" and layout != "AZERTY" and layout != "":
+            print("Invalid layout. Please try again.")
+            layout = input().upper()
+        if layout == "":
             layout = "QWERTY"
     print()
 
@@ -256,7 +264,10 @@ def create_bitly_typos(key, bitly_link, redirect_url, options, debug, bypass, la
     :return: a list of successfully-created bit.ly hyperlinks
     """
     # validate the api key, the long URL, and the bit.ly ID short link URL
-    validate_bitly(key, redirect_url, bitly_link)
+    bitly_link = urlparse(bitly_link)
+    bitly_link = bitly_link.netloc + bitly_link.path
+    if not validate_bitly(key, redirect_url, bitly_link):
+        exit(1)
 
     # maintain a list of successfully-generated bit.ly links
     success_list = []
@@ -301,7 +312,10 @@ def create_tinyurl_typos(key, tinyurl_link, redirect_url, options, debug, bypass
     :return: a list of successfully-created tinyurl hyperlinks
     """
     # validate the api key, the long URL, and the TinyURL ID short link URL
-    validate_tinyurl(key, redirect_url, tinyurl_link)
+    tinyurl_link = urlparse(tinyurl_link)
+    tinyurl_link = tinyurl_link.netloc + tinyurl_link.path
+    if not validate_tinyurl(key, redirect_url, tinyurl_link):
+        exit(1)
 
     # maintain a list of successfully-generated tinyurl links
     success_list = []
@@ -374,6 +388,9 @@ if __name__ == '__main__':
 
         # select which typos to generate
         debug, options, layout = select_options()
+        if options == {'skip': False, 'double': False, 'reverse': False, 'miss': False, 'case': False, 'confuse': False}:
+            print("options error: no options selected", file=sys.stderr)
+            exit(1)
 
     # create the links
     links = []

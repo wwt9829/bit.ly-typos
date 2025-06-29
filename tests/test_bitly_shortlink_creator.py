@@ -1,7 +1,6 @@
 import pytest
-
-from bitly_shortlink_creator import *
 from random import randint
+from bitly_shortlink_creator import *
 
 bitly_api_key = keyring.get_password("system", "bitly")
 headers = {
@@ -31,7 +30,6 @@ def test_update_custom(var_create_link):
 def test_create_short_url():
     result = create_short_url(bitly_api_key, "https://example.com", "bit.ly/example" + str(prn))
     result_content = json.loads(result.content.decode('utf-8'))
-    message = result_content.get('message')
 
     # will fail because already exists
     assert result.status_code == HTTPStatus.BAD_REQUEST
