@@ -2,3 +2,4 @@ keyring
 requests
 tldextract
 validators
+beautifulsoup4
