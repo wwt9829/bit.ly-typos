@@ -14,13 +14,13 @@ Generate and register common typos for your shortlinks.
     * AZERTY
   * Changed case
   * Confusable characters
+* Explainer webpage generation that can be hosted on [my site](https://github.com/wwt9829/bit.ly-typos) (on the [web](https://github.com/wwt9829/bit.ly-typos/tree/web) branch)
 
 ## Requirements
 * Python 3
 * Bitly access token (free token can be obtained from https://app.bitly.com/settings/api)
 * TinyURL access token (free token can be obtained from https://tinyurl.com/app/settings/api)
-* [requests](https://pypi.org/project/requests/)
-* [validators](https://pypi.org/project/validators/)
+* [requirements.txt](./requirements.txt)
 
 ## Usage
 API keys are required to be in the system credential store before running.
@@ -88,7 +88,8 @@ https://tinyurl.com/xample
 ```
 
 ## Resources
+* Summer 2025 DSU CSC-842 Cycle 6 video: [Bit.ly Typos - Final Update | DSU CSC-842 Cycle 6](https://youtu.be/aQl9rtmKbxw)
 * [Avoiding Confusion With Alphanumeric Characters](https://pmc.ncbi.nlm.nih.gov/articles/PMC3541865/) (confusable generator data)
 * Summer 2025 DSU CSC-842 Cycle 4 video: [Bit.ly Typos - TinyURL Support | DSU CSC-842 Cycle 4](https://youtu.be/1o7K8ULE-Qo) (case generator data)
 * Summer 2025 DSU CSC-842 Cycle 2 video: [Bit.ly Typos | DSU CSC-842 Cycle 2](https://youtu.be/3W7VICp06MI)
-* Original 2021 blog post (skip, double, reverse, miss generator data): [Companies: please stop using free URL shorteners | Wyatt Tauber | Medium](https://blog.wyatttauber.com/companies-please-stop-using-free-url-shorteners-especially-for-pii-forms-a32579e47b99)
+* Original 2021 blog post: [Companies: please stop using free URL shorteners | Wyatt Tauber | Medium](https://blog.wyatttauber.com/companies-please-stop-using-free-url-shorteners-especially-for-pii-forms-a32579e47b99) (skip, double, reverse, miss generator data)
