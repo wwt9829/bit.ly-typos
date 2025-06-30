@@ -1,11 +1,9 @@
 import argparse
-from dataclasses import field
 from http import HTTPStatus
 import keyring
 import sys
 import tldextract
 import validators
-#from urllib.parse import urlparse
 from urllib import parse
 
 from create_webpage import process_html_with_shortlink
@@ -388,7 +386,7 @@ if __name__ == '__main__':
         print("cmd usage: shortlink_typo_generator.py [-h --help] [-s --skip] [-d --double] [-r --reverse] [-m --miss] [-c --case] [-f --confuse] [-A --all] [-k --keyboard [QWERTY | QWERTZ | AZERTY]] [-P --preview] [-B --bypass (cmd only)] shortlink redirect_url\n")
 
         # get the shortlink ID and redirect URL from the user
-        shortlink = input('Enter a shortlink (bit.ly or tinyurl.com) to generate typos for: ').strip()
+        shortlink = input('Enter the full URL of a shortlink (bit.ly or tinyurl.com) to generate typos for: ').strip()
         #redirect = input('Enter a URL to redirect the typos to: ').strip()
         print()
 
