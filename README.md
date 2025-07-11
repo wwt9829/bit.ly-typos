@@ -88,8 +88,6 @@ https://tinyurl.com/xample
 ```
 
 ## Resources
-* Summer 2025 DSU CSC-842 Cycle 6 video: [Bit.ly Typos - Final Update | DSU CSC-842 Cycle 6](https://youtu.be/aQl9rtmKbxw)
+* Summer 2025 DSU CSC-842 video: [Bit.ly Typos - Final Update | DSU CSC-842 Cycle 6](https://youtu.be/aQl9rtmKbxw)
 * [Avoiding Confusion With Alphanumeric Characters](https://pmc.ncbi.nlm.nih.gov/articles/PMC3541865/) (confusable generator data)
-* Summer 2025 DSU CSC-842 Cycle 4 video: [Bit.ly Typos - TinyURL Support | DSU CSC-842 Cycle 4](https://youtu.be/1o7K8ULE-Qo) (case generator data)
-* Summer 2025 DSU CSC-842 Cycle 2 video: [Bit.ly Typos | DSU CSC-842 Cycle 2](https://youtu.be/3W7VICp06MI)
 * Original 2021 blog post: [Companies: please stop using free URL shorteners | Wyatt Tauber | Medium](https://blog.wyatttauber.com/companies-please-stop-using-free-url-shorteners-especially-for-pii-forms-a32579e47b99) (skip, double, reverse, miss generator data)
